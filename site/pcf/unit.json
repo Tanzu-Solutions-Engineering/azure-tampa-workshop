@@ -1,0 +1,106 @@
+{
+  "title": "Day One",
+  "subjects": [
+    {
+      "title": "Getting Started",
+      "lessons": [
+        {
+          "title": "Introductions & Schedule",
+          "topic": "process",
+          "materials": [
+            {
+              "title": "slides",
+              "location": "day1-slides/spring-intro.pptx"
+            }
+          ]
+        },
+        {
+          "title": "Deploy Pivotal Cloud Foundry to Azure",
+          "topic": "process",
+          "materials": [
+            {
+              "title": "lab",
+              "location": "deploy.html"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Cloud Native Applications",
+      "lessons": [
+        {
+          "title": "Cloud Native Design Patterns",
+          "topic": "deployment",
+          "materials": [
+            {
+              "title": "slides",
+              "location": "day1-slides/cloud-native-design-patterns.pptx"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Spring Boot",
+      "lessons": [
+        {
+          "title": "Intro to Spring Boot",
+          "topic": "deployment",
+          "materials": [
+            {
+              "title": "slides",
+              "location": "day1-slides/intro-to-spring-boot.pdf"
+            },
+            {
+              "title": "lab",
+              "location": "spring-boot/lab01.html"
+            }
+          ]
+        },
+        {
+          "title": "Persistence with Spring Data",
+          "topic": "deployment",
+          "materials": [
+            {
+              "title": "slides",
+              "location": "day1-slides/persistence-with-spring-data.pdf"
+            },
+            {
+              "title": "lab",
+              "location": "spring-data/lab02.html"
+            }
+          ]
+        },
+        {
+          "title": "Advanced Spring Boot",
+          "topic": "deployment",
+          "materials": [
+            {
+              "title": "slides",
+              "location": "day1-slides/advanced-spring-boot.pdf"
+            },
+            {
+              "title": "lab",
+              "location": "advanced-spring-boot/lab03.html"
+            }
+          ]
+        },
+        {
+          "title": "Azure Spring Boot Starter",
+          "topic": "deployment",
+          "materials": [
+            {
+              "title": "slides",
+              "location": "day1-slides/spring-starters-for-azure.pdf"
+            },
+            {
+              "title": "lab",
+              "location": "azure-spring-starter/azure.html"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

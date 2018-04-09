@@ -1,0 +1,54 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url "http://platform-acceleration-lab-maven.s3.amazonaws.com"
+        }
+    }
+
+    dependencies {
+        classpath "io.pivotal.pal.shipkin:shipkin-plugin:3.5.0"
+    }
+}
+
+apply plugin: "io.pivotal.pal.shipkin.plugin"
+
+shipkin {
+    baseName = "pivotal-transformation-workshop"
+    courseVersion = "1.1.0"
+    courseTitle = "Pivotal Transformation Workshop"
+    showDisclaimer = false
+    feedbackUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdR2-woVmejvILly2I_BYuXQyAY_xAo5ygvTnjJGHsjx7lfHw/viewform"
+    feedbackUrlField = "entry.1985209097"
+    useSecurity = true
+
+    units = [
+        "pcf",
+        "spring"
+    ]
+
+    topicKey = [
+        "lab"    : "primary"
+    ]
+
+    theme {
+        mainColor = "#00ae9e"
+        linkColor = "#009fdf"
+        accentColor = "#86c775"
+        favicon = "/images/favicon.ico"
+
+        backgroundColor = "#fffff0"
+        fontColor = "#000000"
+        headerImage = "/images/cloud-security.jpg"
+        slideImage = "/images/sheep.png"
+        logoImage = "/images/scs-logo.png"
+    }
+}
+
+
+task updateGitSubmodules(type: Exec) {
+    workingDir project.projectDir
+    // commandLine "git", "submodule", "update", "--init", "--recursive"
+}
+
+defaultTasks "tasks"
