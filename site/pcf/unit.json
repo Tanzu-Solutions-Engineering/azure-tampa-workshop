@@ -13,16 +13,6 @@
               "location": "day1-slides/spring-intro.pptx"
             }
           ]
-        },
-        {
-          "title": "Deploy Pivotal Cloud Foundry to Azure",
-          "topic": "process",
-          "materials": [
-            {
-              "title": "lab",
-              "location": "deploy.html"
-            }
-          ]
         }
       ]
     },
