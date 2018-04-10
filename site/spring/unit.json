@@ -1,19 +1,6 @@
 {
   "title": "Cloud Native Microservices Labs",
   "subjects": [
-    {
-      "title": "Spring Cloud",
-      "lessons": [
-        {
-          "title": "Introduction to Spring Cloud",
-          "topic": "deployment",
-          "materials": [
-              {
-                "title": "slides",
-                "location": "day2-slides/scs-intro.pdf"
-              }
-          ]
-        },
         {
           "title": "Spring Cloud Config",
           "topic": "deployment",
