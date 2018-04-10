@@ -5,7 +5,7 @@
       "title": "Getting Started",
       "lessons": [
         {
-          "title": "Overview of the Lab Exercises",
+          "title": "Introductions to Lab Exercises",
           "topic": "process",
           "materials": [
             {
@@ -14,18 +14,37 @@
             }
           ]
         },
+    {
+      "title": "Spring Boot",
+      "lessons": [
         {
-          "title": "Start with Azure Boot Starter connecting to Azure Storage/CosmosDB",
-          "topic": "process",
+          "title": "Lab 1: Using Spring Boot and Spring Data",
+          "topic": "deployment",
           "materials": [
             {
+              "title": "slides",
+              "location": "day1-slides/intro-to-spring-boot.pdf"
+            },
+            {
               "title": "lab",
-              "location": "deploy.html"
+              "location": "spring-boot/lab01.html"
+            }
+          ]
+        },
+        {
+          "title": "Lab 2: Azure Spring Boot Starter",
+          "topic": "deployment",
+          "materials": [
+            {
+              "title": "slides",
+              "location": "day1-slides/spring-starters-for-azure.pdf"
+            },
+            {
+              "title": "lab",
+              "location": "azure-spring-starter/azure.html"
             }
           ]
         }
-      ]
-    }
       ]
     }
   ]
