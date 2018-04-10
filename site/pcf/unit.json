@@ -1,8 +1,8 @@
 {
-  "title": "Azure Labs",
+  "title": "Half-day Azure Labs",
   "subjects": [
     {
-      "title": "Half-day Azure Labs",
+      "title": " -intro- ",
       "lessons": [
         {
           "title": "Intro to Lab Exercises",
@@ -17,16 +17,12 @@
       ]
     },
     {
-      "title": "Spring Boot",
+      "title": " -springboot- ",
       "lessons": [
         {
           "title": "Lab 1: Using Spring Boot and Spring Data",
           "topic": "deployment",
-          "materials": [
-            {
-              "title": "slides",
-              "location": "day1-slides/intro-to-spring-boot.pdf"
-            },
+          "materials": [ 
             {
               "title": "lab",
               "location": "spring-boot/lab01.html"
@@ -37,10 +33,6 @@
           "title": "Lab 2: Azure Spring Boot Starter",
           "topic": "deployment",
           "materials": [
-            {
-              "title": "slides",
-              "location": "day1-slides/spring-starters-for-azure.pdf"
-            },
             {
               "title": "lab",
               "location": "azure-spring-starter/azure.html"
