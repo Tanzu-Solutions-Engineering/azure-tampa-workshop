@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "io.pivotal.pal.shipkin:shipkin-plugin:3.5.0"
+        classpath "io.pivotal.pal.shipkin:shipkin-plugin:5.1.0"
     }
 }
 
@@ -38,7 +38,6 @@ shipkin {
         favicon = "/images/favicon.ico"
 
         backgroundColor = "#fffff0"
-        fontColor = "#000000"
         headerImage = "/images/cloud-security.jpg"
         slideImage = "/images/sheep.png"
         logoImage = "/images/scs-logo.png"
