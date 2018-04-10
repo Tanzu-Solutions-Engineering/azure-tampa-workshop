@@ -17,6 +17,9 @@
       ]
     },
     {
+      "title": " -springboot- ",
+      "lessons": [
+        {
           "title": "Lab 2: Azure Spring Boot Starter",
           "topic": "deployment",
           "materials": [
@@ -26,9 +29,6 @@
             }
           ]
         },
-    {
-      "title": " -springboot- ",
-      "lessons": [
         {
           "title": "Lab 1: Using Spring Boot and Spring Data",
           "topic": "deployment",
