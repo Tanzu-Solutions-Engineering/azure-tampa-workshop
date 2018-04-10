@@ -2,10 +2,10 @@
   "title": "Azure Labs",
   "subjects": [
     {
-      "title": "Getting Started",
+      "title": "Half-day Azure Labs",
       "lessons": [
         {
-          "title": "Introductions to Lab Exercises",
+          "title": "Intro to Lab Exercises",
           "topic": "process",
           "materials": [
             {
@@ -14,6 +14,18 @@
             }
           ]
         },
+        {
+          "title": "Deploy Pivotal Cloud Foundry to Azure",
+          "topic": "process",
+          "materials": [
+            {
+              "title": "lab",
+              "location": "deploy.html"
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "Spring Boot",
       "lessons": [
