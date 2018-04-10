@@ -1,5 +1,5 @@
 {
-  "title": "Day One",
+  "title": "Azure Labs",
   "subjects": [
     {
       "title": "Getting Started",
@@ -27,7 +27,7 @@
       ]
     },
     {
-      "title": "Cloud Native Applications",
+      "title": "Cloud Native Applications Labs",
       "lessons": [
         {
           "title": "Cloud Native Design Patterns",
@@ -55,34 +55,6 @@
             {
               "title": "lab",
               "location": "spring-boot/lab01.html"
-            }
-          ]
-        },
-        {
-          "title": "Persistence with Spring Data",
-          "topic": "deployment",
-          "materials": [
-            {
-              "title": "slides",
-              "location": "day1-slides/persistence-with-spring-data.pdf"
-            },
-            {
-              "title": "lab",
-              "location": "spring-data/lab02.html"
-            }
-          ]
-        },
-        {
-          "title": "Advanced Spring Boot",
-          "topic": "deployment",
-          "materials": [
-            {
-              "title": "slides",
-              "location": "day1-slides/advanced-spring-boot.pdf"
-            },
-            {
-              "title": "lab",
-              "location": "advanced-spring-boot/lab03.html"
             }
           ]
         },
