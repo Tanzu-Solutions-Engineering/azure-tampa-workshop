@@ -1,8 +1,8 @@
 {
-  "title": "Cloud Native Microservices Labs",
+  "title": " - ",
   "subjects": [
     {
-      "title": "Spring Cloud",
+      "title": " - ",
       "lessons": [
         {
           "title": "Intro Spring Cloud Labs",
@@ -18,10 +18,6 @@
           "title": "Lab 3: Spring Cloud Config",
           "topic": "deployment",
           "materials": [
-              {
-                "title": "slides",
-                "location": "day2-slides/spring-cloud-config.pdf"
-              },
             {
               "title": "lab",
               "location": "spring-cloud-config/lab04.html"
@@ -32,10 +28,6 @@
           "title": "Lab 4: Spring Cloud Service Discovery",
           "topic": "deployment",
           "materials": [
-              {
-                "title": "slides",
-                "location": "day2-slides/spring-cloud-service-discovery.pdf"
-              },
             {
               "title": "lab",
               "location": "spring-cloud-service-discovery/lab05.html"
