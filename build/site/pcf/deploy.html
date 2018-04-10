@@ -1,0 +1,395 @@
+                <!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta name="course version" content="1.1.0">
+<meta name="generator" content="io.pivotal.pal.shipkin:shipkin-plugin:5.1.0, https://github.com/platform-acceleration-lab/shipkin">
+<meta name="generated on" content="2018-04-10T21:46:01.078Z">
+<meta name="theme-color" content="#00ae9e">
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Pivotal Azure Workshop</title>
+
+<link rel="icon" href="../images/favicon.ico">
+
+<link rel="stylesheet" href="../css/reset.css">
+<link rel="stylesheet" href="../css/theme.css">
+<link rel="stylesheet" href="../css/highlight.js.min.css">
+<link rel="stylesheet" href="../css/github.css">
+
+<style>
+
+    #header {
+        border-color: #86c775;
+        background-color: #00ae9e;
+    }
+
+    footer {
+        background-color: #00ae9e;
+    }
+
+    .label.label-primary {
+        background-color: #009fdf;
+    }
+
+    a {
+        color: #009fdf;
+    }
+
+    .label.label-primary:hover, .label.label-primary:focus {
+        background-color: #faeee;
+    }
+
+    a:hover, a:focus {
+        color: #faeee;
+    }
+
+    .slide {
+        color: #00ae9e;
+    }
+
+    .slide h2, .slide label {
+        color: #009fdf;
+    }
+
+    .slide input {
+        color: rgba(0, 174, 158, 0.65);
+    }
+
+    .face path {
+        fill: #009fdf;
+    }
+
+    body {
+        background-color: #fffff0;
+    }
+
+    .slide {
+        background-color: rgba(255, 255, 240, 0.9);
+    }
+
+    .slide.text {
+        background-color: #fffff0;
+    }
+
+    .slide h2, .slide label {
+        color: inherit;
+    }
+
+
+
+    .slide:before {
+        background-image: url(../images/sheep.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        content: "";
+
+        height: 120px;
+        width: 115px;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+    }
+</style>
+
+</head>
+<body>
+
+
+<style>
+    #header {
+        background: linear-gradient(rgba(0, 174, 158, 0.65), rgba(0, 174, 158, 0.65)), url(../images/cloud-security.jpg) no-repeat center;
+        background-size: cover;
+
+    }
+</style>
+
+<header id="header">
+    <div class="container">
+        <img src="../images/scs-logo.png" alt="Pivotal Azure Workshop logo">
+
+        <div>
+            <a href="..">
+                <h1>Pivotal Azure Workshop</h1>
+
+            </a>
+
+        </div>
+    </div>
+</header>
+
+
+<a class="feedback" href="https://docs.google.com/forms/d/e/1FAIpQLSdR2-woVmejvILly2I_BYuXQyAY_xAo5ygvTnjJGHsjx7lfHw/viewform" data-url-field="entry.1985209097" target="_blank" rel="noreferrer noopener">
+    <button>feedback</button>
+</a>
+
+<main id="main">
+
+    <div id="content" class="container">
+        <article>
+ <h1 id="deploying-pivotal-cloud-foundry">Deploying Pivotal Cloud Foundry</h1>
+<h2 id="service-principal">Service Principal</h2>
+<p>In order to deploy Pivotal Cloud Foundry using the Azure Marketplace, we will need to create a Service Principal so the platform can deploy itself.</p>
+<p>To create a Service Principal using the Azure CLI, follow these steps.</p>
+<blockquote>
+<p>Note: Replace <code>\</code> with <code>^</code> if you are on Windows.</p>
+</blockquote>
+<ol>
+<li>
+<p>Run <code>az login</code> to authenticate with Azure.</p>
+</li>
+<li>
+<p>You first need to create an AzureAD application.</p>
+<pre><code class="language-sh">az ad app create --display-name &quot;Service Principal for BOSH&quot; \
+--password &quot;PASSWORD&quot; --homepage &quot;http://BOSHAzureCPI&quot; \
+--identifier-uris &quot;http://BOSHAzureCPI&quot; &gt; azureApp.json
+</code></pre>
+</li>
+<li>
+<p>Copy your <code>appId</code> from <code>axureApp.json</code>.</p>
+</li>
+<li>
+<p>We need to create an RBAC Service Principal.</p>
+<pre><code class="language-sh">az ad sp create-for-rbac \
+--id &lt;your-appId&gt; \
+--role contributor \
+--scope /subscriptions/&lt;your-subscriptionId&gt; &gt; azureSP.json
+</code></pre>
+</li>
+<li>
+<p>Currently, the Azure Marketplace Offering requires a special file layout. Extract the values location in <code>azureSP.json</code> and create a new file called <code>pcfSP.json</code> with this layout:</p>
+<pre><code class="language-json">{
+    &quot;appId&quot;: &quot;&lt;your-appId&gt;&quot;,
+    &quot;displayName&quot;: &quot;&lt;your-displayName&gt;&quot;,
+    &quot;name&quot;: &quot;&lt;your-homePage&gt;&quot;,
+    &quot;password&quot;: &quot;&lt;your-clientSecret&gt;&quot;,
+    &quot;tenant&quot;: &quot;&lt;your-tenantId&gt;&quot;
+}
+</code></pre>
+</li>
+</ol>
+<h2 id="pivotal-network">Pivotal Network</h2>
+<p>The Azure Marketplace deployment for Pivotal Cloud Foundry requires an API token from the Pivotal Network.</p>
+<ol>
+<li>Open the <a href="https://network.pivotal.io" rel="noreferrer noopener">Pivotal Network</a> web site.</li>
+<li>Log in.</li>
+<li>In the top right corner, click on your name.</li>
+<li>Select <code>Edit Profile</code>.</li>
+<li>At the bottom of that page, there is a field called <code>API Token</code>. Copy that value or leave the web page open.</li>
+</ol>
+<h2 id="deploy-pivotal-cloud-foundry-from-the-azure-marketplace">Deploy Pivotal Cloud Foundry from the Azure Marketplace</h2>
+<p>In order for us to utilise our own instances of Pivotal Cloud Foundry, we will need to deploy it. The easiest way to deploy PCF is via the Azure Marketplace.</p>
+<ol>
+<li>Open the <a href="https://portal.azure.com" rel="noreferrer noopener">Azure Portal</a>.</li>
+<li>Go the Marketplace. If it is not in your left blade, you can find it by selecting the <code>More services</code> tab and searching for <code>Marketplace</code>.</li>
+<li>In the Marketplace, search for <code>Cloud Foundry</code>.</li>
+<li>Select <code>Pivotal Cloud Foundry on Mirosoft Azure</code>.</li>
+<li>Click <code>Create</code></li>
+<li>For the Storage Account Name, we recommend using <code>p</code> to denote it's a Pivotal-specific storage account.</li>
+<li>Paste your SSH Public Key.</li>
+<li>For the Service Principal field, cick the folder icon and upload the <code>pcfSP.json</code> file you have just created.</li>
+<li>Paste your Pivotal Network token from above.</li>
+<li>Make sure you are using the same subscription you created the Service Principal in.</li>
+<li>For the <code>Location</code> field, we recommend using the nearest data centre location to you.</li>
+<li>Select <code>OK</code></li>
+<li>Proceed through the <code>Buy</code> blade by entering your information.</li>
+</ol>
+<h1 id="post-deployment">Post-deployment</h1>
+<p>Deployments take roughly ~2 hours to complete, even though it shows as completed in the Azure Portal sooner. Here is how you can extract the necessary information from Azure and Pivotal Cloud Foundry to get started.</p>
+<h2 id="getting-opsmanager-credentials">Getting OpsManager Credentials.</h2>
+<ol>
+<li>Select the Resource Group PCF is was deployed to.</li>
+<li>On the left side of the Resource Group blade, select the <code>Deployments</code> view.</li>
+<li>Select <code>pivotal.pivotal-cloud-foundryazure-pcf-&lt;date&gt;</code>.</li>
+<li>Under the <code>Outputs</code> section, you will see the username, password, and URL to log into OpsManager.</li>
+<li>You can either copy this information to your laptop or come back to it as needed.</li>
+</ol>
+<h2 id="logging-into-appsmanager">Logging into AppsManager</h2>
+<p>We will need to log into AppsManager into order to download the Cloud Foundry cli and configure authentication so we can push our apps.</p>
+<ol>
+<li>Log into OpsManager using the credentials from the previous section.</li>
+<li>Select the <code>Pivotal Elastic Runtime</code> tile.</li>
+<li>From the blades on the left, select <code>Domains</code> (2nd from the top). These domains are your top level domains for the Azure Marketplace PCF deployment. Copy these values to your laptop for later reference. For the Azure Marketplace deployment, PCF is configured to use a custom DNS provider, which allows us to easily resolve subdomains via IP addresses. <strong>This is not recommended for production deployments.</strong></li>
+<li>Select the <code>Credentials</code> tab.</li>
+<li>Scroll to the <code>UAA</code> section. Open the <code>Admin Credentials</code> link in a new tab. Those credentials allow us to log into AppsManager.</li>
+<li>Browse to <code>login.&lt;system-domain&gt;</code>, and enter the credentials from the previous step.</li>
+<li>The page will load into the Apps you are authourised to use, select <code>PCF Apps Manager</code>.</li>
+<li>Once logged in, on the top left, click the dropdown by &quot;system&quot; and select &quot;Create a New Org&quot;. It does not matter what you name it.</li>
+<li>After org has been created, make sure to create a space.</li>
+</ol>
+         </article>
+        <div class="sidebar-container">
+<nav id="sidebar">
+    <div class="title">
+        <a href="../index.html">Return to Pivotal Azure Workshop</a>
+    </div>
+    <div class="content">
+        <a href="#">Back to top</a>
+
+<ul>
+        <li>
+        <a href="#deploying-pivotal-cloud-foundry">Deploying Pivotal Cloud Foundry</a>
+
+<ul>
+        <li>
+        <a href="#service-principal">Service Principal</a>
+
+        </li>
+        <li>
+        <a href="#pivotal-network">Pivotal Network</a>
+
+        </li>
+        <li>
+        <a href="#deploy-pivotal-cloud-foundry-from-the-azure-marketplace">Deploy Pivotal Cloud Foundry from the Azure Marketplace</a>
+
+        </li>
+</ul>
+        </li>
+        <li>
+        <a href="#post-deployment">Post-deployment</a>
+
+<ul>
+        <li>
+        <a href="#getting-opsmanager-credentials">Getting OpsManager Credentials.</a>
+
+        </li>
+        <li>
+        <a href="#logging-into-appsmanager">Logging into AppsManager</a>
+
+        </li>
+</ul>
+        </li>
+</ul>
+    </div>
+</nav>
+        </div>
+    </div>
+</main>
+
+
+<div class="slide" data-slide="1">
+    <h1>Pivotal Azure Workshop</h1>
+</div>
+
+<div class="slide transparent" data-slide="2">
+    <h1>Get started!</h1>
+</div>
+
+<div class="slide" data-slide="3">
+    <h1>Wrap up</h1>
+
+    <div class="faces">
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M13,9.94L14.06,11L15.12,9.94L16.18,11L17.24,9.94L15.12,7.82L13,9.94M8.88,9.94L9.94,11L11,9.94L8.88,7.82L6.76,9.94L7.82,11L8.88,9.94M12,17.5C14.33,17.5 16.31,16.04 17.11,14H6.89C7.69,16.04 9.67,17.5 12,17.5Z"/>
+        </svg>
+
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M8.5,11A1.5,1.5 0 0,1 7,9.5A1.5,1.5 0 0,1 8.5,8A1.5,1.5 0 0,1 10,9.5A1.5,1.5 0 0,1 8.5,11M15.5,11A1.5,1.5 0 0,1 14,9.5A1.5,1.5 0 0,1 15.5,8A1.5,1.5 0 0,1 17,9.5A1.5,1.5 0 0,1 15.5,11M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M9,14H15A1,1 0 0,1 16,15A1,1 0 0,1 15,16H9A1,1 0 0,1 8,15A1,1 0 0,1 9,14Z"/>
+        </svg>
+
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M16.18,7.76L15.12,8.82L14.06,7.76L13,8.82L14.06,9.88L13,10.94L14.06,12L15.12,10.94L16.18,12L17.24,10.94L16.18,9.88L17.24,8.82L16.18,7.76M7.82,12L8.88,10.94L9.94,12L11,10.94L9.94,9.88L11,8.82L9.94,7.76L8.88,8.82L7.82,7.76L6.76,8.82L7.82,9.88L6.76,10.94L7.82,12M12,14C9.67,14 7.69,15.46 6.89,17.5H17.11C16.31,15.46 14.33,14 12,14Z"/>
+        </svg>
+    </div>
+</div>
+
+
+<div class="slide lemon-squeezy" data-slide="7">
+    <h1>Easy peasy</h1>
+    <h1>lemon squeezy!</h1>
+</div>
+
+<div class="slide" data-slide="8">
+    <h1>Lunch time!</h1>
+    <label for="lunch-end">will return</label>
+    <input type="text" name="lunch-end" data-time>
+</div>
+
+<div class="slide" data-slide="9">
+    <h1>Break time!</h1>
+    <label for="break-end">will return</label>
+    <input type="text" name="break-end" data-time>
+</div>
+
+<audio src="../audio/gong.mp3"
+       id="gong"
+       preload>
+</audio>
+
+<div class="slide" data-slide="¿">
+    <h2>Keyboard shortcuts</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Key</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>Show <em>introduction</em> slide</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Show <em>get started</em> slide</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Show <em>wrap up</em> slide</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Show <em>instructor notes</em></td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Easy peasy</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Show <em>lunch time</em> slide</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>Show <em>break time</em> slide</td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>Play gong sound</td>
+        </tr>
+        <tr>
+            <td>ESC</td>
+            <td>Close slide</td>
+        </tr>
+        <tr>
+            <td>?</td>
+            <td>Show this help message</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer>
+    <a href="https://pivotal.io/legal" rel="noreferrer noopener">CONFIDENTIAL -
+        © Copyright 2018 Pivotal Software, Inc. All Rights Reserved.</a>
+    <div>
+        <label class="hidden-checkbox">
+            <input type="checkbox" id="instructor-mode">
+            <span>course version: 1.1.0<sup class="check">IM</sup></span>
+        </label>
+    </div>
+</footer>
+
+<script src="../js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script src="../js/shipkin.js"></script>
+<script src="../js/slides.js"></script>
+
+</body>
+</html>
+

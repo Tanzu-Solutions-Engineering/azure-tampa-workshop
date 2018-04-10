@@ -1,0 +1,491 @@
+                <!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta name="course version" content="1.1.0">
+<meta name="generator" content="io.pivotal.pal.shipkin:shipkin-plugin:5.1.0, https://github.com/platform-acceleration-lab/shipkin">
+<meta name="generated on" content="2018-04-10T21:46:01.119Z">
+<meta name="theme-color" content="#00ae9e">
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Pivotal Azure Workshop</title>
+
+<link rel="icon" href="../../images/favicon.ico">
+
+<link rel="stylesheet" href="../../css/reset.css">
+<link rel="stylesheet" href="../../css/theme.css">
+<link rel="stylesheet" href="../../css/highlight.js.min.css">
+<link rel="stylesheet" href="../../css/github.css">
+
+<style>
+
+    #header {
+        border-color: #86c775;
+        background-color: #00ae9e;
+    }
+
+    footer {
+        background-color: #00ae9e;
+    }
+
+    .label.label-primary {
+        background-color: #009fdf;
+    }
+
+    a {
+        color: #009fdf;
+    }
+
+    .label.label-primary:hover, .label.label-primary:focus {
+        background-color: #faeee;
+    }
+
+    a:hover, a:focus {
+        color: #faeee;
+    }
+
+    .slide {
+        color: #00ae9e;
+    }
+
+    .slide h2, .slide label {
+        color: #009fdf;
+    }
+
+    .slide input {
+        color: rgba(0, 174, 158, 0.65);
+    }
+
+    .face path {
+        fill: #009fdf;
+    }
+
+    body {
+        background-color: #fffff0;
+    }
+
+    .slide {
+        background-color: rgba(255, 255, 240, 0.9);
+    }
+
+    .slide.text {
+        background-color: #fffff0;
+    }
+
+    .slide h2, .slide label {
+        color: inherit;
+    }
+
+
+
+    .slide:before {
+        background-image: url(../../images/sheep.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        content: "";
+
+        height: 120px;
+        width: 115px;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+    }
+</style>
+
+</head>
+<body>
+
+
+<style>
+    #header {
+        background: linear-gradient(rgba(0, 174, 158, 0.65), rgba(0, 174, 158, 0.65)), url(../../images/cloud-security.jpg) no-repeat center;
+        background-size: cover;
+
+    }
+</style>
+
+<header id="header">
+    <div class="container">
+        <img src="../../images/scs-logo.png" alt="Pivotal Azure Workshop logo">
+
+        <div>
+            <a href="../..">
+                <h1>Pivotal Azure Workshop</h1>
+
+            </a>
+
+        </div>
+    </div>
+</header>
+
+
+<a class="feedback" href="https://docs.google.com/forms/d/e/1FAIpQLSdR2-woVmejvILly2I_BYuXQyAY_xAo5ygvTnjJGHsjx7lfHw/viewform" data-url-field="entry.1985209097" target="_blank" rel="noreferrer noopener">
+    <button>feedback</button>
+</a>
+
+<main id="main">
+
+    <div id="content" class="container">
+        <article>
+ <h1 id="overview">Overview</h1>
+<p>In this lab we’ll utilize Spring Boot and Spring Cloud to make our UI
+Application more resilient. We’ll leverage Spring Cloud Circuit Breaker
+to configure our application behavior when our downstream dependencies
+are not available. Finally, we’ll use the circuit breaker dashboard to
+view metrics of the circuit breaker we implemented, which will be
+auto-provisioned within Pivotal Cloud Foundry Spring Cloud Services.</p>
+<h1 id="define-a-circuit-breaker-within-the-ui-application">Define a Circuit Breaker within the <em>UI Application</em></h1>
+<ol>
+<li>
+<p>These features are added by adding
+<code>spring-cloud-services-starter-circuit-breaker</code> to Maven project
+dependencies:</p>
+<p><strong>cloud-native-spring-ui/pom.xml.</strong></p>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.pivotal.spring.cloud&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-cloud-services-starter-circuit-breaker&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>The first thing we need to add to our application is an
+<code>@EnableCircuitBreaker</code> annotation to the Spring Boot application.
+Add this annotation to the <code>CloudNativeSpringUIApplication</code> class:</p>
+<p><strong>cloud-native-spring-ui/src/main/java/io/pivotal/cloudnativespringui/CloudNativeSpringUiApplication.java.</strong></p>
+<pre><code class="language-java">@SpringBootApplication
+@EnableFeignClients
+@EnableDiscoveryClient
+@EnableCircuitBreaker // &lt;---- Add this
+public class CloudNativeSpringUiApplication {
+    [...]
+}
+</code></pre>
+</li>
+<li>
+<p>When we introduced the <code>@FeignClient</code> into our application we were
+only required to provide an interface. We’ll provide a dummy class
+that implements that interface for our fallback. We’ll also
+reference that class as a fallback in our <code>@FeignClient</code> annotation.
+First, create this inner class in the
+<code>CloudNativeSpringUiApplication</code> class:</p>
+<p><strong>cloud-native-spring-ui/src/main/java/io/pivotal/cloudnativespringui/CloudNativeSpringUiApplication.java.</strong></p>
+<pre><code>@Component
+public class CityClientFallback implements CityClient {
+    @Override
+    public Resources&lt;City&gt; getCities() {
+        // We'll just return an empty response
+        return new Resources&lt;City&gt;(Collections.emptyList());
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>Also modify the <code>@FeignClient</code> annotation to reference this class as
+the fallback in case of failure:</p>
+<p><strong>cloud-native-spring-ui/src/main/java/io/pivotal/cloudnativespringui/CloudNativeSpringUiApplication.java.</strong></p>
+<pre><code>@FeignClient(name = &quot;cloud-native-spring&quot;, fallback = CityClientFallback.class)
+public interface CityClient {
+    [...]
+}
+</code></pre>
+</li>
+<li>
+<p>Your Boot Application should now look like this
+<em>CloudNativeSpringUiApplication</em>:</p>
+<p><strong>cloud-native-spring-ui/src/main/java/io/pivotal/cloudnativespringui/CloudNativeSpringUiApplication.java.</strong></p>
+<pre><code>package io.pivotal.cloudnativespringui;
+
+import java.util.Collections;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.feign.EnableFeignClients;
+import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.hateoas.Resources;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import io.pivotal.cloudnativespring.domain.City;
+
+@SpringBootApplication
+@EnableFeignClients
+@EnableDiscoveryClient
+@EnableCircuitBreaker
+public class CloudNativeSpringUiApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(CloudNativeSpringUiApplication.class, args);
+    }
+
+    @FeignClient(name = &quot;cloud-native-spring&quot;, fallback = CityClientFallback.class)
+    public interface CityClient {
+        @GetMapping(value = &quot;/cities&quot;, consumes = &quot;application/hal+json&quot;)
+        Resources&lt;City&gt; getCities();
+    }
+
+    @Component
+    public class CityClientFallback implements CityClient {
+        @Override
+        public Resources&lt;City&gt; getCities() {
+            // We'll just return an empty response
+            return new Resources&lt;City&gt;(Collections.emptyList());
+        }
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>To enable Feign Hystrix support, we’ll need to add the following to
+our Spring Boot configuration:</p>
+<p><strong>cloud-native-spring-ui/src/main/resources/application.yml.</strong></p>
+<pre><code class="language-yaml">feign:
+    hystrix:
+    enabled: true
+</code></pre>
+<p>Completed:</p>
+<p><strong>cloud-native-spring-ui/src/main/resources/application.yml.</strong></p>
+<pre><code class="language-yaml">spring:
+    application:
+    name: cloud-native-spring-ui
+
+feign:
+    hystrix:
+    enabled: true
+
+security:
+    basic:
+    enabled: false
+</code></pre>
+</li>
+</ol>
+<h1 id="create-the-circuit-breaker-dashboard">Create the Circuit Breaker Dashboard</h1>
+<ol>
+<li>
+<p>When we modified our application to use a Hystrix Circuit Breaker
+our application automatically begins streaming out metrics about the
+health of our methods wrapped with a HystrixCommand. We can stream
+these events through a AMQP message bus into Turbine to view on a
+Circuit Breaker dashboard. This can be done through Cloud Foundry
+using the services marketplace by executing the following command:</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring-ui $ cf create-service p-circuit-breaker-dashboard standard circuit-breaker-dashboard
+</code></pre>
+</li>
+<li>
+<p>If we view the Circuit Breaker Dashboard (accessible from the
+<strong>Manage</strong> link in Apps Manager) you will see that a dashboard has
+been deployed but is empty (You may get an <em>initializing</em> message
+for a few seconds. This should eventually refresh to a dashboard):</p>
+<p><img src="images/dash.jpg" alt="" /></p>
+</li>
+<li>
+<p>We will now bind our application to our <code>circuit-breaker-dashboard</code>
+within our Cloud Foundry deployment manifest:</p>
+<p><strong>cloud-native-spring-ui/manifest.yml.</strong></p>
+<pre><code class="language-yaml">services:
+- service-registry
+- circuit-breaker-dashboard # &lt;---- Add this
+</code></pre>
+</li>
+</ol>
+<h1 id="deploy-and-test-application">Deploy and test application</h1>
+<ol>
+<li>
+<p>Build the application</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring-ui $ ./mvnw package
+</code></pre>
+</li>
+<li>
+<p>Push application to Cloud Foundry</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring-ui $ cf push
+</code></pre>
+</li>
+<li>
+<p>Test your application by navigating to the root URL of
+the application. If the dependent cities REST service is still
+stopped, you should simply see a blank table. Remember that last
+time you received a nasty exception in the browser? Now your Circuit
+Breaker fallback method is automatically called and the fallback
+behavior is executed.</p>
+<p><img src="images/empty.jpg" alt="" /></p>
+</li>
+<li>
+<p>From a commandline start the cloud-native-spring microservice (the
+original city service, not the new UI)</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ cf start cloud-native-spring
+</code></pre>
+</li>
+<li>
+<p>Refresh the UI app and you should once again see a table listing the
+first page of cities.</p>
+<p><img src="../lab05/images/ui.jpg" alt="" /></p>
+</li>
+<li>
+<p>Refresh your UI application a few times to force some traffic though
+the circuit breaker call path. After doing this you should now see
+the dashboard populated with metrics about the health of your
+Hystrix circuit breaker:</p>
+<p><img src="images/dash1.jpg" alt="" /></p>
+</li>
+</ol>
+         </article>
+        <div class="sidebar-container">
+<nav id="sidebar">
+    <div class="title">
+        <a href="../../index.html">Return to Pivotal Azure Workshop</a>
+    </div>
+    <div class="content">
+        <a href="#">Back to top</a>
+
+<ul>
+        <li>
+        <a href="#overview">Overview</a>
+
+        </li>
+        <li>
+        <a href="#define-a-circuit-breaker-within-the-ui-application">Define a Circuit Breaker within the UI Application</a>
+
+        </li>
+        <li>
+        <a href="#create-the-circuit-breaker-dashboard">Create the Circuit Breaker Dashboard</a>
+
+        </li>
+        <li>
+        <a href="#deploy-and-test-application">Deploy and test application</a>
+
+        </li>
+</ul>
+    </div>
+</nav>
+        </div>
+    </div>
+</main>
+
+
+<div class="slide" data-slide="1">
+    <h1>Pivotal Azure Workshop</h1>
+</div>
+
+<div class="slide transparent" data-slide="2">
+    <h1>Get started!</h1>
+</div>
+
+<div class="slide" data-slide="3">
+    <h1>Wrap up</h1>
+
+    <div class="faces">
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M13,9.94L14.06,11L15.12,9.94L16.18,11L17.24,9.94L15.12,7.82L13,9.94M8.88,9.94L9.94,11L11,9.94L8.88,7.82L6.76,9.94L7.82,11L8.88,9.94M12,17.5C14.33,17.5 16.31,16.04 17.11,14H6.89C7.69,16.04 9.67,17.5 12,17.5Z"/>
+        </svg>
+
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M8.5,11A1.5,1.5 0 0,1 7,9.5A1.5,1.5 0 0,1 8.5,8A1.5,1.5 0 0,1 10,9.5A1.5,1.5 0 0,1 8.5,11M15.5,11A1.5,1.5 0 0,1 14,9.5A1.5,1.5 0 0,1 15.5,8A1.5,1.5 0 0,1 17,9.5A1.5,1.5 0 0,1 15.5,11M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M9,14H15A1,1 0 0,1 16,15A1,1 0 0,1 15,16H9A1,1 0 0,1 8,15A1,1 0 0,1 9,14Z"/>
+        </svg>
+
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M16.18,7.76L15.12,8.82L14.06,7.76L13,8.82L14.06,9.88L13,10.94L14.06,12L15.12,10.94L16.18,12L17.24,10.94L16.18,9.88L17.24,8.82L16.18,7.76M7.82,12L8.88,10.94L9.94,12L11,10.94L9.94,9.88L11,8.82L9.94,7.76L8.88,8.82L7.82,7.76L6.76,8.82L7.82,9.88L6.76,10.94L7.82,12M12,14C9.67,14 7.69,15.46 6.89,17.5H17.11C16.31,15.46 14.33,14 12,14Z"/>
+        </svg>
+    </div>
+</div>
+
+
+<div class="slide lemon-squeezy" data-slide="7">
+    <h1>Easy peasy</h1>
+    <h1>lemon squeezy!</h1>
+</div>
+
+<div class="slide" data-slide="8">
+    <h1>Lunch time!</h1>
+    <label for="lunch-end">will return</label>
+    <input type="text" name="lunch-end" data-time>
+</div>
+
+<div class="slide" data-slide="9">
+    <h1>Break time!</h1>
+    <label for="break-end">will return</label>
+    <input type="text" name="break-end" data-time>
+</div>
+
+<audio src="../../audio/gong.mp3"
+       id="gong"
+       preload>
+</audio>
+
+<div class="slide" data-slide="¿">
+    <h2>Keyboard shortcuts</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Key</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>Show <em>introduction</em> slide</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Show <em>get started</em> slide</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Show <em>wrap up</em> slide</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Show <em>instructor notes</em></td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Easy peasy</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Show <em>lunch time</em> slide</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>Show <em>break time</em> slide</td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>Play gong sound</td>
+        </tr>
+        <tr>
+            <td>ESC</td>
+            <td>Close slide</td>
+        </tr>
+        <tr>
+            <td>?</td>
+            <td>Show this help message</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer>
+    <a href="https://pivotal.io/legal" rel="noreferrer noopener">CONFIDENTIAL -
+        © Copyright 2018 Pivotal Software, Inc. All Rights Reserved.</a>
+    <div>
+        <label class="hidden-checkbox">
+            <input type="checkbox" id="instructor-mode">
+            <span>course version: 1.1.0<sup class="check">IM</sup></span>
+        </label>
+    </div>
+</footer>
+
+<script src="../../js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script src="../../js/shipkin.js"></script>
+<script src="../../js/slides.js"></script>
+
+</body>
+</html>
+

@@ -1,0 +1,779 @@
+                <!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta name="course version" content="1.1.0">
+<meta name="generator" content="io.pivotal.pal.shipkin:shipkin-plugin:5.1.0, https://github.com/platform-acceleration-lab/shipkin">
+<meta name="generated on" content="2018-04-10T21:46:01.071Z">
+<meta name="theme-color" content="#00ae9e">
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Pivotal Azure Workshop</title>
+
+<link rel="icon" href="../../images/favicon.ico">
+
+<link rel="stylesheet" href="../../css/reset.css">
+<link rel="stylesheet" href="../../css/theme.css">
+<link rel="stylesheet" href="../../css/highlight.js.min.css">
+<link rel="stylesheet" href="../../css/github.css">
+
+<style>
+
+    #header {
+        border-color: #86c775;
+        background-color: #00ae9e;
+    }
+
+    footer {
+        background-color: #00ae9e;
+    }
+
+    .label.label-primary {
+        background-color: #009fdf;
+    }
+
+    a {
+        color: #009fdf;
+    }
+
+    .label.label-primary:hover, .label.label-primary:focus {
+        background-color: #faeee;
+    }
+
+    a:hover, a:focus {
+        color: #faeee;
+    }
+
+    .slide {
+        color: #00ae9e;
+    }
+
+    .slide h2, .slide label {
+        color: #009fdf;
+    }
+
+    .slide input {
+        color: rgba(0, 174, 158, 0.65);
+    }
+
+    .face path {
+        fill: #009fdf;
+    }
+
+    body {
+        background-color: #fffff0;
+    }
+
+    .slide {
+        background-color: rgba(255, 255, 240, 0.9);
+    }
+
+    .slide.text {
+        background-color: #fffff0;
+    }
+
+    .slide h2, .slide label {
+        color: inherit;
+    }
+
+
+
+    .slide:before {
+        background-image: url(../../images/sheep.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        content: "";
+
+        height: 120px;
+        width: 115px;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+    }
+</style>
+
+</head>
+<body>
+
+
+<style>
+    #header {
+        background: linear-gradient(rgba(0, 174, 158, 0.65), rgba(0, 174, 158, 0.65)), url(../../images/cloud-security.jpg) no-repeat center;
+        background-size: cover;
+
+    }
+</style>
+
+<header id="header">
+    <div class="container">
+        <img src="../../images/scs-logo.png" alt="Pivotal Azure Workshop logo">
+
+        <div>
+            <a href="../..">
+                <h1>Pivotal Azure Workshop</h1>
+
+            </a>
+
+        </div>
+    </div>
+</header>
+
+
+<a class="feedback" href="https://docs.google.com/forms/d/e/1FAIpQLSdR2-woVmejvILly2I_BYuXQyAY_xAo5ygvTnjJGHsjx7lfHw/viewform" data-url-field="entry.1985209097" target="_blank" rel="noreferrer noopener">
+    <button>feedback</button>
+</a>
+
+<main id="main">
+
+    <div id="content" class="container">
+        <article>
+ <h2 id="overview">Overview</h2>
+<p>Spring Boot includes a number of additional features to help you monitor and manage your application when it’s pushed to production. You can choose to manage and monitor your application using HTTP endpoints, with JMX or even by remote shell (SSH or Telnet). Auditing, health and metrics gathering can be automatically applied to your application.</p>
+<h2 id="set-up-the-actuator">Set up the Actuator</h2>
+<p>Spring Boot includes a number of additional features to help you monitor and manage your application when it’s pushed to production. These features are added by adding <code>spring-boot-starter-actuator</code> to the classpath. During our initial project setup with <a href="https://start.spring.io" rel="noreferrer noopener">Spring Initializr</a> we’ve already included that.</p>
+<ol>
+<li>
+<p>Verify the Spring Boot Actuator dependency is listed in Maven <code>dependencies</code>:</p>
+<p><strong>cloud-native-spring/pom.xml.</strong></p>
+<pre><code class="language-xml">&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>By default Spring Boot will use Spring Security to protect these management endpoints (which is a good thing!) Though you wouldn’t want to disable this in production, we’ll do so in this sample app to make demonstration a bit easier and simpler.</p>
+<p>Add the following to your Spring Boot configuration:</p>
+<p><strong>cloud-native-spring/src/main/resources/application.yml.</strong></p>
+<pre><code class="language-yaml">endpoints: # add this section
+  sensitive: false
+</code></pre>
+</li>
+<li>
+<p>Run the updated application:</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw spring-boot:run
+</code></pre>
+<p>Try out the following endpoints. The output is omitted here because it can be quite large:</p>
+<table class="table">
+<thead>
+<tr><th>URL</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="http://localhost:8080/health" rel="noreferrer noopener">http://localhost:8080/health</a></td><td>Displays Application and Datasource health information. This can be customized based on application functionality, which we’ll do later.</td></tr>
+<tr><td><a href="http://localhost:8080/beans" rel="noreferrer noopener">http://localhost:8080/beans</a></td><td>Dumps all of the beans in the Spring context.</td></tr>
+<tr><td><a href="http://localhost:8080/autoconfig" rel="noreferrer noopener">http://localhost:8080/autoconfig</a></td><td>Dumps all of the auto-configuration performed as part of application bootstrapping.</td></tr>
+<tr><td><a href="http://localhost:8080/configprops" rel="noreferrer noopener">http://localhost:8080/configprops</a></td><td>Displays a collated list of all @ConfigurationProperties.</td></tr>
+<tr><td><a href="http://localhost:8080/env" rel="noreferrer noopener">http://localhost:8080/env</a></td><td>Dumps the application’s shell environment as well as all Java system properties.</td></tr>
+<tr><td><a href="http://localhost:8080/mappings" rel="noreferrer noopener">http://localhost:8080/mappings</a></td><td>Dumps all URI request mappings and the controller methods to which they are mapped.</td></tr>
+<tr><td><a href="http://localhost:8080/dump" rel="noreferrer noopener">http://localhost:8080/dump</a></td><td>Performs a thread dump.</td></tr>
+<tr><td><a href="http://localhost:8080/trace" rel="noreferrer noopener">http://localhost:8080/trace</a></td><td>Displays trace information (by default the last few HTTP requests).</td></tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Stop the <em>cloud-native-spring</em> application.</p>
+</li>
+</ol>
+<h1 id="include-version-control-info">Include Version Control Info</h1>
+<p>Spring Boot provides a <a href="http://localhost:8080/info" rel="noreferrer noopener">/info</a> endpoint that
+allows the exposure of arbitrary metadata. By default this information
+is empty, however, we can use <em>actuator</em> to expose information about the
+specific build and version control coordinates for a given deployment.</p>
+<ol>
+<li>
+<p>The <code>git-commit-id-plugin</code> adds Git branch and commit coordinates to the <a href="http://localhost:8080/info" rel="noreferrer noopener">/info</a> endpoint. Add the <code>git-commit-id-plugin</code> to Maven build plugins.</p>
+<p><strong>cloud-native-spring/pom.xml.</strong></p>
+<pre><code class="language-xml">&lt;project&gt;
+  [...]
+  &lt;build&gt;
+    &lt;plugins&gt;
+      [...]
+      &lt;plugin&gt;
+        &lt;groupId&gt;pl.project13.maven&lt;/groupId&gt;
+        &lt;artifactId&gt;git-commit-id-plugin&lt;/artifactId&gt;
+        &lt;configuration&gt;
+          &lt;dotGitDirectory&gt;../../../.git&lt;/dotGitDirectory&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+      [...]
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+  [...]
+&lt;/project&gt;
+</code></pre>
+<p><strong>Note</strong></p>
+<p>The path <code>../../../.git</code> refers to the <code>.git</code> directory at the root of the lab materials repo. When using in your own project you’ll need to adjust the path to your projects <code>.git</code> folder location.</p>
+<p>Completed Maven configuration:</p>
+<p><strong>cloud-native-spring/pom.xml.</strong></p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+  xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+  &lt;groupId&gt;io.pivotal&lt;/groupId&gt;
+  &lt;artifactId&gt;cloud-native-spring&lt;/artifactId&gt;
+  &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+  &lt;packaging&gt;jar&lt;/packaging&gt;
+
+  &lt;name&gt;cloud-native-spring&lt;/name&gt;
+  &lt;description&gt;Demo project for Spring Boot&lt;/description&gt;
+
+  &lt;parent&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+    &lt;version&gt;{spring-boot-version}.RELEASE&lt;/version&gt;
+    &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+  &lt;/parent&gt;
+
+  &lt;properties&gt;
+    &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+    &lt;java.version&gt;1.8&lt;/java.version&gt;
+  &lt;/properties&gt;
+
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-data-rest&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.h2database&lt;/groupId&gt;
+      &lt;artifactId&gt;h2&lt;/artifactId&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;mysql&lt;/groupId&gt;
+      &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+
+  &lt;build&gt;
+    &lt;plugins&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+      &lt;/plugin&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;pl.project13.maven&lt;/groupId&gt;
+        &lt;artifactId&gt;git-commit-id-plugin&lt;/artifactId&gt;
+        &lt;configuration&gt;
+          &lt;dotGitDirectory&gt;../../../.git&lt;/dotGitDirectory&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+&lt;/project&gt;
+</code></pre>
+</li>
+<li>
+<p>Run the <em>cloud-native-spring</em> application:</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw spring-boot:run
+</code></pre>
+</li>
+<li>
+<p>Browse to the <a href="http://localhost:8080/info" rel="noreferrer noopener">info</a> endpoint. Git commit information is now included:</p>
+<pre><code class="language-json">{
+  &quot;git&quot; : {
+    &quot;commit&quot; : {
+      &quot;time&quot; : &quot;2017-11-08T16:14:50.000+0000&quot;,
+      &quot;id&quot; : &quot;0966076&quot;
+    },
+    &quot;branch&quot; : &quot;master&quot;
+  }
+}
+</code></pre>
+</li>
+<li>
+<p>Stop the <em>cloud-native-spring</em> application</p>
+<p><strong>What Just Happened?</strong></p>
+<p>By including the <code>git-commit-id-plugin</code>, details about git commit information will be included in the <a href="http://localhost:8080/info" rel="noreferrer noopener">/info</a> endpoint. Git information is captured in a <code>git.properties</code> file that is generated with the build.</p>
+<p>For reference, review the generated file:</p>
+<p><strong>cloud-native-spring/target/classes/git.properties.</strong></p>
+<pre><code class="language-ini">#Generated by Git-Commit-Id-Plugin
+#Wed Nov 08 10:14:59 CST 2017
+git.branch=master
+git.build.host=user.local
+git.build.time=2017-11-08T10\:14\:59-0600
+git.build.user.email=user@example.com
+...
+</code></pre>
+</li>
+</ol>
+<h2 id="include-build-info">Include Build Info</h2>
+<ol>
+<li>
+<p>Add the following properties to your Spring Boot configuration:</p>
+<p><strong>cloud-native-spring/src/main/resources/application.yml.</strong></p>
+<pre><code class="language-yaml">info: # add this section
+  builDd:
+    artifact: @project.artifactId@
+    name: @project.name@
+    description: @project.description@
+    version: @project.version@
+</code></pre>
+<p>These will add the project’s Maven coordinates to the <a href="http://localhost:8080/info" rel="noreferrer noopener">/info</a> endpoint. The Spring Boot Maven plugin will cause them to automatically be replaced in theassembled JAR.</p>
+<p><strong>Note</strong></p>
+<p>If Spring Tool Suite reports a problem with the application.yml due to @ character the problem can safely be ignored. If you <em>really</em> want to git rid of the error message, wrap the values in quotes. Example: <code>artifact: &quot;@project.artifactId@&quot;</code></p>
+</li>
+<li>
+<p>Build and run the cloud-native-spring application:</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw spring-boot:run
+</code></pre>
+</li>
+<li>
+<p>Browse to the <a href="http://localhost:8080/info" rel="noreferrer noopener">/info</a> endpoint. Build
+information is now included:</p>
+<pre><code class="language-json">{
+  &quot;build&quot; : {
+    &quot;artifact&quot; : &quot;cloud-native-spring&quot;,
+    &quot;name&quot; : &quot;cloud-native-spring&quot;,
+    &quot;description&quot; : &quot;Demo project for Spring Boot&quot;,
+    &quot;version&quot; : &quot;0.0.1-SNAPSHOT&quot;
+  },
+  &quot;git&quot; : {
+    &quot;commit&quot; : {
+      &quot;time&quot; : &quot;2017-11-08T16:14:50.000+0000&quot;,
+      &quot;id&quot; : &quot;0966076&quot;
+    },
+    &quot;branch&quot; : &quot;master&quot;
+  }
+}
+</code></pre>
+</li>
+<li>
+<p>Stop the <em>cloud-native-spring</em> application.</p>
+<p><strong>What Just Happened?</strong></p>
+<p>We have mapped Maven properties from the <code>pom.xml</code> into the <a href="http://localhost:8080/info" rel="noreferrer noopener">/info</a> endpoint.</p>
+<p>Read more about exposing data in the <a href="http://localhost:8080/info" rel="noreferrer noopener">/info</a> endpoint <a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready" rel="noreferrer noopener">here</a></p>
+</li>
+</ol>
+<h2 id="health-indicators">Health Indicators</h2>
+<p>Spring Boot provides a <a href="http://localhost:8080/health" rel="noreferrer noopener">/health</a> endpoint that exposes various health indicators that describe the health of the given application. Normally, when Spring Security is not enabled, the <a href="http://localhost:8080/health" rel="noreferrer noopener">/health</a> endpoint will only expose an UP or DOWN value.</p>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;UP&quot;
+}
+</code></pre>
+<ol>
+<li>
+<p>To simplify working with the endpoint for this lab, we will turn off
+additional security for the health endpoint.</p>
+<p>Add the following to your Spring Boot configuration:</p>
+<p><strong>cloud-native-spring/src/main/resources/application.yml.</strong></p>
+<pre><code class="language-yaml">management: # add this section
+  security:
+    enabled: false
+</code></pre>
+</li>
+<li>
+<p>Build and run the <em>cloud-native-spring</em> application:</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw spring-boot:run
+</code></pre>
+</li>
+<li>
+<p>Browse to the <a href="http://localhost:8080/health" rel="noreferrer noopener">/health</a> endpoint. Out of the box is a <code>DiskSpaceHealthIndicator</code> that monitors health in terms of available disk space. Would your Ops team like to know if the app is close to running out of disk space? <code>DiskSpaceHealthIndicator</code> can be customized via <code>DiskSpaceHealthIndicatorProperties</code>. For instance, setting a different threshold for when to report the status as DOWN.</p>
+<pre><code class="language-json">{
+  &quot;status&quot; : &quot;UP&quot;,
+  &quot;diskSpace&quot; : {
+    &quot;status&quot; : &quot;UP&quot;,
+    &quot;total&quot; : 499283816448,
+    &quot;free&quot; : 133883150336,
+    &quot;threshold&quot; : 10485760
+  },
+  &quot;db&quot; : {
+    &quot;status&quot; : &quot;UP&quot;,
+    &quot;database&quot; : &quot;H2&quot;,
+    &quot;hello&quot; : 1
+  }
+}
+</code></pre>
+</li>
+<li>
+<p>Stop the <em>cloud-native-spring</em> application.</p>
+</li>
+<li>
+<p>Let’s create a custom health indicator that will randomize the health check. Create the class <code>io.pivotal.cloudnativespring.FlappingHealthIndicator</code> and into it paste the following code:</p>
+<p><strong>cloud-native-spring/src/main/java/io/pivotal/cloudnativespring/FlappingHealthIndicator.java.</strong></p>
+<pre><code class="language-java">package io.pivotal.cloudnativespring;
+
+import java.util.Random;
+
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.stereotype.Component;
+
+@Component
+public class FlappingHealthIndicator implements HealthIndicator {
+
+    private Random random = new Random(System.currentTimeMillis());
+
+    @Override
+    public Health health() {
+        int result = random.nextInt(100);
+        if (result &lt; 50) {
+            return Health.down().withDetail(&quot;flapper&quot;, &quot;failure&quot;).withDetail(&quot;random&quot;, result).build();
+        } else {
+            return Health.up().withDetail(&quot;flapper&quot;, &quot;ok&quot;).withDetail(&quot;random&quot;, result).build();
+        }
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>Build and run the <em>cloud-native-spring</em> application:</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw spring-boot:run
+</code></pre>
+</li>
+<li>
+<p>Browse to the <a href="http://localhost:8080/health" rel="noreferrer noopener">/health</a> endpoint and verify that the output is similar to the following (and changes randomly!).</p>
+<pre><code class="language-json">{
+  &quot;status&quot; : &quot;DOWN&quot;,
+  &quot;flapping&quot; : {
+    &quot;status&quot; : &quot;DOWN&quot;,
+    &quot;flapper&quot; : &quot;failure&quot;,
+    &quot;random&quot; : 48
+  },
+  &quot;diskSpace&quot; : {
+    &quot;status&quot; : &quot;UP&quot;,
+    &quot;total&quot; : 499283816448,
+    &quot;free&quot; : 133891973120,
+    &quot;threshold&quot; : 10485760
+  },
+  &quot;db&quot; : {
+    &quot;status&quot; : &quot;UP&quot;,
+    &quot;database&quot; : &quot;H2&quot;,
+    &quot;hello&quot; : 1
+  }
+}
+</code></pre>
+</li>
+</ol>
+<h2 id="metrics">Metrics</h2>
+<p>Spring Boot provides a <a href="http://localhost:8080/metrics" rel="noreferrer noopener">/metrics</a> endpoint that exposes several automatically collected metrics for your application. It also allows for the creation of custom metrics.</p>
+<ol>
+<li>
+<p>Browse to the <a href="http://localhost:8080/metrics" rel="noreferrer noopener">/metrics</a> endpoint. Review the metrics exposed:</p>
+<pre><code class="language-json">{
+  &quot;mem&quot; : 867005,
+  &quot;mem.free&quot; : 337836,
+  &quot;processors&quot; : 8,
+  &quot;instance.uptime&quot; : 212096,
+  &quot;uptime&quot; : 220870,
+  &quot;systemload.average&quot; : 2.97265625,
+  &quot;heap.committed&quot; : 762368,
+  &quot;heap.init&quot; : 262144,
+  &quot;heap.used&quot; : 424531,
+  &quot;heap&quot; : 3728384,
+  &quot;nonheap.committed&quot; : 107584,
+  &quot;nonheap.init&quot; : 2496,
+  &quot;nonheap.used&quot; : 104638,
+  &quot;nonheap&quot; : 0,
+  &quot;threads.peak&quot; : 27,
+  &quot;threads.daemon&quot; : 21,
+  &quot;threads.totalStarted&quot; : 32,
+  &quot;threads&quot; : 23,
+  &quot;classes&quot; : 13753,
+  &quot;classes.loaded&quot; : 13753,
+  &quot;classes.unloaded&quot; : 0,
+  &quot;gc.ps_scavenge.count&quot; : 8,
+  &quot;gc.ps_scavenge.time&quot; : 148,
+  &quot;gc.ps_marksweep.count&quot; : 3,
+  &quot;gc.ps_marksweep.time&quot; : 433,
+  &quot;httpsessions.max&quot; : -1,
+  &quot;httpsessions.active&quot; : 0,
+  &quot;datasource.primary.active&quot; : 0,
+  &quot;datasource.primary.usage&quot; : 0.0,
+  &quot;gauge.response.health&quot; : 2.0,
+  &quot;gauge.response.star-star.favicon.ico&quot; : 1.0,
+  &quot;counter.status.200.star-star.favicon.ico&quot; : 21,
+  &quot;counter.status.200.health&quot; : 12,
+  &quot;counter.status.503.health&quot; : 10
+}
+</code></pre>
+</li>
+<li>
+<p>Stop the <em>cloud-native-spring</em> application.</p>
+</li>
+</ol>
+<h1 id="deploy-cloud-native-spring-to-pivotal-cloud-foundry">Deploy <em>cloud-native-spring</em> to Pivotal Cloud Foundry</h1>
+<ol>
+<li>
+<p>Build the application:</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw package
+</code></pre>
+</li>
+<li>
+<p>When running a Spring Boot application on Pivotal Cloud Foundry with the actuator endpoints enabled, you can visualize actuator management information on the Apps Manager dashboard. To enable this there are a few properties we need to add.</p>
+<p>Add the following to your Spring Boot configuration:</p>
+<p><strong>cloud-native-spring/src/main/resources/application.yml.</strong></p>
+<pre><code class="language-yaml">management:
+  security:
+    enabled: false
+  info:
+    git:
+      mode: full
+  cloudfoundry:
+    enabled: true
+    skip-ssl-validation: false # set to true if using an insecure CF environment
+</code></pre>
+</li>
+<li>
+<p>In order to add full build information to your artifact that is pushed to Cloud Foundry, and add the following execution and classifier to the <code>spring-boot-maven-plugin</code>:</p>
+<p><strong>cloud-native-spring/pom.xml.</strong></p>
+<pre><code class="language-xml">&lt;executions&gt;
+  &lt;execution&gt;
+    &lt;goals&gt;
+      &lt;goal&gt;build-info&lt;/goal&gt;
+    &lt;/goals&gt;
+  &lt;/execution&gt;
+&lt;/executions&gt;
+&lt;configuration&gt;
+  &lt;classifier&gt;exec&lt;/classifier&gt;
+&lt;/configuration&gt;
+</code></pre>
+<p>The full plugin config should look like the following:</p>
+<p><strong>cloud-native-spring/pom.xml.</strong></p>
+<pre><code class="language-xml">&lt;project&gt;
+  [...]
+  &lt;build&gt;
+    &lt;plugins&gt;
+      [...]
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+        &lt;executions&gt;
+          &lt;execution&gt;
+            &lt;goals&gt;
+              &lt;goal&gt;build-info&lt;/goal&gt;
+            &lt;/goals&gt;
+          &lt;/execution&gt;
+        &lt;/executions&gt;
+        &lt;configuration&gt;
+          &lt;classifier&gt;exec&lt;/classifier&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+      [...]
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+  [...]
+&lt;/project&gt;
+</code></pre>
+</li>
+<li>
+<p>By specifying a classifier we actually just produced 2 jars, one that is executable and one that can be used as an artifact that could be included in other apps (such as our Client UI app we’ll create later). Because of this we need to chance the name of the jar we included in our manifest.yml file.</p>
+<p>Change the Cloud Foundry manifest path property to:</p>
+<p><strong>cloud-native-spring/manifest.yml.</strong></p>
+<pre><code class="language-yaml">---
+applications:
+- name: cloud-native-spring
+  random-route: true
+  memory: 768M
+  path: target/cloud-native-spring-0.0.1-SNAPSHOT-exec.jar # &lt;-- update jar name
+  timeout: 180
+  env:
+    JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
+</code></pre>
+</li>
+<li>
+<p>Rebuild the application</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw package
+</code></pre>
+</li>
+<li>
+<p>Push application into Cloud Foundry</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ cf push
+</code></pre>
+</li>
+<li>
+<p>Find the URL created for your app in the health status report and browse to your app. Also view your application details in the Apps Manager UI:</p>
+<p><img src="images/appsman.jpg" alt="" /></p>
+</li>
+<li>
+<p>From this UI you can also dynamically change logging levels:</p>
+<p><img src="images/logging.jpg" alt="" /></p>
+</li>
+</ol>
+<p><strong>Congratulations!</strong> You’ve just learned how to add health and metrics to any Spring Boot application.</p>
+         </article>
+        <div class="sidebar-container">
+<nav id="sidebar">
+    <div class="title">
+        <a href="../../index.html">Return to Pivotal Azure Workshop</a>
+    </div>
+    <div class="content">
+        <a href="#">Back to top</a>
+
+<ul>
+        <li>
+        <a href="#include-version-control-info">Include Version Control Info</a>
+
+<ul>
+        <li>
+        <a href="#include-build-info">Include Build Info</a>
+
+        </li>
+        <li>
+        <a href="#health-indicators">Health Indicators</a>
+
+        </li>
+        <li>
+        <a href="#metrics">Metrics</a>
+
+        </li>
+</ul>
+        </li>
+        <li>
+        <a href="#deploy-cloud-native-spring-to-pivotal-cloud-foundry">Deploy cloud-native-spring to Pivotal Cloud Foundry</a>
+
+        </li>
+</ul>
+    </div>
+</nav>
+        </div>
+    </div>
+</main>
+
+
+<div class="slide" data-slide="1">
+    <h1>Pivotal Azure Workshop</h1>
+</div>
+
+<div class="slide transparent" data-slide="2">
+    <h1>Get started!</h1>
+</div>
+
+<div class="slide" data-slide="3">
+    <h1>Wrap up</h1>
+
+    <div class="faces">
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M13,9.94L14.06,11L15.12,9.94L16.18,11L17.24,9.94L15.12,7.82L13,9.94M8.88,9.94L9.94,11L11,9.94L8.88,7.82L6.76,9.94L7.82,11L8.88,9.94M12,17.5C14.33,17.5 16.31,16.04 17.11,14H6.89C7.69,16.04 9.67,17.5 12,17.5Z"/>
+        </svg>
+
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M8.5,11A1.5,1.5 0 0,1 7,9.5A1.5,1.5 0 0,1 8.5,8A1.5,1.5 0 0,1 10,9.5A1.5,1.5 0 0,1 8.5,11M15.5,11A1.5,1.5 0 0,1 14,9.5A1.5,1.5 0 0,1 15.5,8A1.5,1.5 0 0,1 17,9.5A1.5,1.5 0 0,1 15.5,11M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M9,14H15A1,1 0 0,1 16,15A1,1 0 0,1 15,16H9A1,1 0 0,1 8,15A1,1 0 0,1 9,14Z"/>
+        </svg>
+
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M16.18,7.76L15.12,8.82L14.06,7.76L13,8.82L14.06,9.88L13,10.94L14.06,12L15.12,10.94L16.18,12L17.24,10.94L16.18,9.88L17.24,8.82L16.18,7.76M7.82,12L8.88,10.94L9.94,12L11,10.94L9.94,9.88L11,8.82L9.94,7.76L8.88,8.82L7.82,7.76L6.76,8.82L7.82,9.88L6.76,10.94L7.82,12M12,14C9.67,14 7.69,15.46 6.89,17.5H17.11C16.31,15.46 14.33,14 12,14Z"/>
+        </svg>
+    </div>
+</div>
+
+
+<div class="slide lemon-squeezy" data-slide="7">
+    <h1>Easy peasy</h1>
+    <h1>lemon squeezy!</h1>
+</div>
+
+<div class="slide" data-slide="8">
+    <h1>Lunch time!</h1>
+    <label for="lunch-end">will return</label>
+    <input type="text" name="lunch-end" data-time>
+</div>
+
+<div class="slide" data-slide="9">
+    <h1>Break time!</h1>
+    <label for="break-end">will return</label>
+    <input type="text" name="break-end" data-time>
+</div>
+
+<audio src="../../audio/gong.mp3"
+       id="gong"
+       preload>
+</audio>
+
+<div class="slide" data-slide="¿">
+    <h2>Keyboard shortcuts</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Key</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>Show <em>introduction</em> slide</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Show <em>get started</em> slide</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Show <em>wrap up</em> slide</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Show <em>instructor notes</em></td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Easy peasy</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Show <em>lunch time</em> slide</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>Show <em>break time</em> slide</td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>Play gong sound</td>
+        </tr>
+        <tr>
+            <td>ESC</td>
+            <td>Close slide</td>
+        </tr>
+        <tr>
+            <td>?</td>
+            <td>Show this help message</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer>
+    <a href="https://pivotal.io/legal" rel="noreferrer noopener">CONFIDENTIAL -
+        © Copyright 2018 Pivotal Software, Inc. All Rights Reserved.</a>
+    <div>
+        <label class="hidden-checkbox">
+            <input type="checkbox" id="instructor-mode">
+            <span>course version: 1.1.0<sup class="check">IM</sup></span>
+        </label>
+    </div>
+</footer>
+
+<script src="../../js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script src="../../js/shipkin.js"></script>
+<script src="../../js/slides.js"></script>
+
+</body>
+</html>
+

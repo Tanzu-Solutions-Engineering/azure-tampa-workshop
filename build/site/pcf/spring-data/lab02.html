@@ -1,0 +1,716 @@
+                <!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta name="course version" content="1.1.0">
+<meta name="generator" content="io.pivotal.pal.shipkin:shipkin-plugin:5.1.0, https://github.com/platform-acceleration-lab/shipkin">
+<meta name="generated on" content="2018-04-10T21:46:01.047Z">
+<meta name="theme-color" content="#00ae9e">
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Pivotal Azure Workshop</title>
+
+<link rel="icon" href="../../images/favicon.ico">
+
+<link rel="stylesheet" href="../../css/reset.css">
+<link rel="stylesheet" href="../../css/theme.css">
+<link rel="stylesheet" href="../../css/highlight.js.min.css">
+<link rel="stylesheet" href="../../css/github.css">
+
+<style>
+
+    #header {
+        border-color: #86c775;
+        background-color: #00ae9e;
+    }
+
+    footer {
+        background-color: #00ae9e;
+    }
+
+    .label.label-primary {
+        background-color: #009fdf;
+    }
+
+    a {
+        color: #009fdf;
+    }
+
+    .label.label-primary:hover, .label.label-primary:focus {
+        background-color: #faeee;
+    }
+
+    a:hover, a:focus {
+        color: #faeee;
+    }
+
+    .slide {
+        color: #00ae9e;
+    }
+
+    .slide h2, .slide label {
+        color: #009fdf;
+    }
+
+    .slide input {
+        color: rgba(0, 174, 158, 0.65);
+    }
+
+    .face path {
+        fill: #009fdf;
+    }
+
+    body {
+        background-color: #fffff0;
+    }
+
+    .slide {
+        background-color: rgba(255, 255, 240, 0.9);
+    }
+
+    .slide.text {
+        background-color: #fffff0;
+    }
+
+    .slide h2, .slide label {
+        color: inherit;
+    }
+
+
+
+    .slide:before {
+        background-image: url(../../images/sheep.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        content: "";
+
+        height: 120px;
+        width: 115px;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+    }
+</style>
+
+</head>
+<body>
+
+
+<style>
+    #header {
+        background: linear-gradient(rgba(0, 174, 158, 0.65), rgba(0, 174, 158, 0.65)), url(../../images/cloud-security.jpg) no-repeat center;
+        background-size: cover;
+
+    }
+</style>
+
+<header id="header">
+    <div class="container">
+        <img src="../../images/scs-logo.png" alt="Pivotal Azure Workshop logo">
+
+        <div>
+            <a href="../..">
+                <h1>Pivotal Azure Workshop</h1>
+
+            </a>
+
+        </div>
+    </div>
+</header>
+
+
+<a class="feedback" href="https://docs.google.com/forms/d/e/1FAIpQLSdR2-woVmejvILly2I_BYuXQyAY_xAo5ygvTnjJGHsjx7lfHw/viewform" data-url-field="entry.1985209097" target="_blank" rel="noreferrer noopener">
+    <button>feedback</button>
+</a>
+
+<main id="main">
+
+    <div id="content" class="container">
+        <article>
+ <h1 id="overview">Overview</h1>
+<p>In this lab we’ll utilize Spring Boot, Spring Data, and Spring Data REST to create a fully-functional hypermedia-driven RESTful web service. We’ll then deploy it to Pivotal Cloud Foundry.</p>
+<h2 id="create-a-hypermedia-driven-restful-web-service-with-spring-data-rest">Create a Hypermedia-Driven RESTful Web Service with Spring Data REST</h2>
+<p>This application will create a simple reading list by asking for books you have read and storing them in a simple relational repository. We’ll continue building upon the Spring Boot application we build in the Spring Boot lab. The first stereotype we will need is the domain model itself, which is <code>City</code>.</p>
+<h2 id="add-the-city-domain-object">Add the <code>City</code> domain object</h2>
+<ol>
+<li>
+<p>Create the package <code>io.pivotal.cloudnativespring.domain</code> and in that package create the class <code>City</code> using the following Java Persistence API code, which represents cities based on postal codes, global coordinates, etc.</p>
+<p><strong>cloud-native-spring/src/main/java/io/pivotal/cloudnativespring/domain/City.java.</strong></p>
+<pre><code class="language-java">package io.pivotal.cloudnativespring.domain;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name=&quot;city&quot;)
+public class City implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue
+    private long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String county;
+
+    @Column(nullable = false)
+    private String stateCode;
+
+    @Column(nullable = false)
+    private String postalCode;
+
+    @Column
+    private String latitude;
+
+    @Column
+    private String longitude;
+
+    public String getName() { return name; }
+
+    public void setName(String name) { this.name = name; }
+
+    public String getPostalCode() { return postalCode; }
+
+    public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
+
+    public long getId() { return id; }
+
+    public void setId(long id) { this.id = id; }
+
+    public String getStateCode() { return stateCode; }
+
+    public void setStateCode(String stateCode) { this.stateCode = stateCode; }
+
+    public String getCounty() { return county; }
+
+    public void setCounty(String county) { this.county = county; }
+
+    public String getLatitude() { return latitude; }
+
+    public void setLatitude(String latitude) { this.latitude = latitude; }
+
+    public String getLongitude() { return longitude; }
+
+    public void setLongitude(String longitude) { this.longitude = longitude; }
+}
+</code></pre>
+</li>
+<li>
+<p>Create the package <code>io.pivotal.cloudnativespring.repositories</code> and in that package create the interface <code>CityRepository</code> using the following code.</p>
+<p><strong>cloud-native-spring/src/main/java/io/pivotal/cloudnativespring/repositories/CityRepository.java.</strong></p>
+<pre><code class="language-java">package io.pivotal.cloudnativespring.repositories;
+
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+import io.pivotal.cloudnativespring.domain.City;
+
+@RepositoryRestResource(collectionResourceRel = &quot;cities&quot;, path = &quot;cities&quot;)
+public interface CityRepository extends PagingAndSortingRepository&lt;City, Long&gt; {
+}
+</code></pre>
+</li>
+<li>
+<p>Add JPA and REST Repository support to the <code>io.pivotal.cloudnativespring.CloudNativeSpringApplication</code> Spring Boot Application class.</p>
+<p><strong>cloud-native-spring/src/main/java/io/pivotal/cloudnativespring/CloudNativeSpringApplication.java.</strong></p>
+<pre><code class="language-java">package io.pivotal.cloudnativespring;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+// Add these imports:
+import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
+
+@SpringBootApplication
+@RestController
+@EnableJpaRepositories // &lt;---- And this
+@Import(RepositoryRestMvcConfiguration.class) // &lt;---- And this
+public class CloudNativeSpringApplication {
+
+        public static void main(String[] args) {
+                SpringApplication.run(CloudNativeSpringApplication.class, args);
+        }
+
+        @RequestMapping(&quot;/&quot;)
+        public String hello() {
+                return &quot;Hello World!&quot;;
+        }
+}
+</code></pre>
+</li>
+</ol>
+<h2 id="run-the-cloud-native-spring-application">Run the <em>cloud-native-spring</em> Application</h2>
+<ol>
+<li>
+<p>Run the application using the project’s Maven Wrapper command:</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw spring-boot:run
+</code></pre>
+</li>
+<li>
+<p>Access the application using <code>curl</code> or your web browser using the newly added REST repository endpoint at <a href="http://localhost:8080/cities" rel="noreferrer noopener">http://localhost:8080/cities</a>. You’ll see that the primary endpoint automatically exposes the ability to page, size, and sort the response JSON.</p>
+<pre><code class="language-sh">$ curl -i http://localhost:8080/cities
+HTTP/1.1 200
+X-Application-Context: application
+Content-Type: application/hal+json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Thu, 02 Nov 2017 04:10:15 GMT
+
+{
+  &quot;_embedded&quot; : {
+    &quot;cities&quot; : [ ]
+  },
+  &quot;_links&quot; : {
+    &quot;self&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities{?page,size,sort}&quot;,
+      &quot;templated&quot; : true
+    },
+    &quot;profile&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/profile/cities&quot;
+    }
+  },
+  &quot;page&quot; : {
+    &quot;size&quot; : 20,
+    &quot;totalElements&quot; : 0,
+    &quot;totalPages&quot; : 0,
+    &quot;number&quot; : 0
+  }
+}
+</code></pre>
+</li>
+</ol>
+<p>So what have you done? Created four small classes (including our unit test) and one build file, resulting in a fully-functional REST microservice. The application’s <code>DataSource</code> is created automatically by Spring Boot using the in-memory database because no other <code>DataSource</code>
+was detected in the project. Next we’ll import some data.</p>
+<h2 id="importing-data">Importing Data</h2>
+<ol>
+<li>
+<p>Add this <a href="https://raw.githubusercontent.com/Pivotal-Field-Engineering/CN-Workshop/master/labs/lab02/import.sql" rel="noreferrer noopener">import.sql</a> file found in <strong>CN-Workshop/labs/lab02/</strong> to <code>src/main/resources</code>. This is a rather large dataset containing all of the postal codes in the United States and its territories. This file will automatically be picked up by Hibernate and imported into the in-memory database.</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ cp ../../lab02/import.sql src/main/resources/.
+</code></pre>
+</li>
+<li>
+<p>Restart the application.</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw spring-boot:run
+</code></pre>
+</li>
+<li>
+<p>Access the application again: <a href="http://localhost:8080/cities" rel="noreferrer noopener">http://localhost:8080/cities</a>. Notice the appropriate hypermedia is included for <code>next</code>, <code>previous</code>, and <code>self</code>. You can also select pages and page size by utilizing <code>?size=n&amp;page=n</code> on the URL string. Finally, you can sort the data utilizing <code>?sort=fieldName</code> (replace fieldName with a cities attribute).</p>
+<pre><code class="language-sh">$ curl -i localhost:8080/cities
+HTTP/1.1 200
+X-Application-Context: application
+Content-Type: application/hal+json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Thu, 02 Nov 2017 11:30:26 GMT
+
+{
+  &quot;_embedded&quot; : {
+    &quot;cities&quot; : [ {
+      &quot;name&quot; : &quot;HOLTSVILLE&quot;,
+      &quot;county&quot; : &quot;SUFFOLK&quot;,
+      &quot;stateCode&quot; : &quot;NY&quot;,
+      &quot;postalCode&quot; : &quot;00501&quot;,
+      &quot;latitude&quot; : &quot;+40.922326&quot;,
+      &quot;longitude&quot; : &quot;-072.637078&quot;,
+      &quot;_links&quot; : {
+        &quot;self&quot; : {
+          &quot;href&quot; : &quot;http://localhost:8080/cities/1&quot;
+        },
+        &quot;city&quot; : {
+          &quot;href&quot; : &quot;http://localhost:8080/cities/1&quot;
+        }
+      }
+    },
+
+    // ...
+
+    {
+      &quot;name&quot; : &quot;CASTANER&quot;,
+      &quot;county&quot; : &quot;LARES&quot;,
+      &quot;stateCode&quot; : &quot;PR&quot;,
+      &quot;postalCode&quot; : &quot;00631&quot;,
+      &quot;latitude&quot; : &quot;+18.269187&quot;,
+      &quot;longitude&quot; : &quot;-066.864993&quot;,
+      &quot;_links&quot; : {
+        &quot;self&quot; : {
+          &quot;href&quot; : &quot;http://localhost:8080/cities/20&quot;
+        },
+        &quot;city&quot; : {
+          &quot;href&quot; : &quot;http://localhost:8080/cities/20&quot;
+        }
+      }
+    } ]
+  },
+  &quot;_links&quot; : {
+    &quot;first&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities?page=0&amp;size=20&quot;
+    },
+    &quot;self&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities{?page,size,sort}&quot;,
+      &quot;templated&quot; : true
+    },
+    &quot;next&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities?page=1&amp;size=20&quot;
+    },
+    &quot;last&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities?page=2137&amp;size=20&quot;
+    },
+    &quot;profile&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/profile/cities&quot;
+    }
+  },
+  &quot;page&quot; : {
+    &quot;size&quot; : 20,
+    &quot;totalElements&quot; : 42741,
+    &quot;totalPages&quot; : 2138,
+    &quot;number&quot; : 0
+  }
+}
+</code></pre>
+</li>
+<li>
+<p>Try the following URL Paths in your browser or <code>curl</code> to see how the application behaves:</p>
+<p><a href="http://localhost:8080/cities?size=5" rel="noreferrer noopener">http://localhost:8080/cities?size=5</a></p>
+<p><a href="http://localhost:8080/cities?size=5&amp;page=3" rel="noreferrer noopener">http://localhost:8080/cities?size=5&amp;page=3</a></p>
+<p><a href="http://localhost:8080/cities?sort=postalCode,desc" rel="noreferrer noopener">http://localhost:8080/cities?sort=postalCode,desc</a></p>
+</li>
+</ol>
+<p>Next we’ll add searching capabilities.</p>
+<h2 id="adding-search">Adding Search</h2>
+<ol>
+<li>
+<p>Let’s add some additional finder methods to <code>CityRepository</code>:</p>
+<p><strong>cloud-native-spring/src/main/java/io/pivotal/cloudnativespring/repositories/CityRepository.java.</strong></p>
+<pre><code class="language-java">@RestResource(path = &quot;name&quot;, rel = &quot;name&quot;)
+Page&lt;City&gt; findByNameIgnoreCase(@Param(&quot;q&quot;) String name, Pageable pageable);
+
+@RestResource(path = &quot;nameContains&quot;, rel = &quot;nameContains&quot;)
+Page&lt;City&gt; findByNameContainsIgnoreCase(@Param(&quot;q&quot;) String name, Pageable pageable);
+
+@RestResource(path = &quot;state&quot;, rel = &quot;state&quot;)
+Page&lt;City&gt; findByStateCodeIgnoreCase(@Param(&quot;q&quot;) String stateCode, Pageable pageable);
+
+@RestResource(path = &quot;postalCode&quot;, rel = &quot;postalCode&quot;)
+Page&lt;City&gt; findByPostalCode(@Param(&quot;q&quot;) String postalCode, Pageable pageable);
+</code></pre>
+</li>
+<li>
+<p>Run the application</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw spring-boot:run
+</code></pre>
+</li>
+<li>
+<p>Access the application again. Notice that hypermedia for a new <code>search</code> endpoint has appeared.</p>
+<pre><code class="language-sh">~ » curl -i localhost:8080/cities
+HTTP/1.1 200
+X-Application-Context: application
+Content-Type: application/hal+json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Thu, 02 Nov 2017 11:45:10 GMT
+
+{
+  // ...
+
+  &quot;_links&quot; : {
+    &quot;first&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities?page=0&amp;size=20&quot;
+    },
+    &quot;self&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities{?page,size,sort}&quot;,
+      &quot;templated&quot; : true
+    },
+    &quot;next&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities?page=1&amp;size=20&quot;
+    },
+    &quot;last&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities?page=2137&amp;size=20&quot;
+    },
+    &quot;profile&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/profile/cities&quot;
+    },
+    &quot;search&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities/search&quot;
+    }
+  },
+  &quot;page&quot; : {
+    &quot;size&quot; : 20,
+    &quot;totalElements&quot; : 42741,
+    &quot;totalPages&quot; : 2138,
+    &quot;number&quot; : 0
+  }
+}
+</code></pre>
+</li>
+<li>
+<p>Access the new <code>search</code> endpoint: <a href="http://localhost:8080/cities/search" rel="noreferrer noopener">http://localhost:8080/cities/search</a></p>
+<pre><code class="language-sh">$ curl -i localhost:8080/cities/search
+HTTP/1.1 200
+X-Application-Context: application
+Content-Type: application/hal+json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Thu, 02 Nov 2017 11:49:15 GMT
+
+{
+  &quot;_links&quot; : {
+    &quot;postalCode&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities/search/postalCode{?q,page,size,sort}&quot;,
+      &quot;templated&quot; : true
+    },
+    &quot;name&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities/search/name{?q,page,size,sort}&quot;,
+      &quot;templated&quot; : true
+    },
+    &quot;state&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities/search/state{?q,page,size,sort}&quot;,
+      &quot;templated&quot; : true
+    },
+    &quot;nameContains&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities/search/nameContains{?q,page,size,sort}&quot;,
+      &quot;templated&quot; : true
+    },
+    &quot;self&quot; : {
+      &quot;href&quot; : &quot;http://localhost:8080/cities/search&quot;
+    }
+  }
+}
+</code></pre>
+<p>Note that we now have new search endpoints for each of the finders that we added.</p>
+</li>
+<li>
+<p>Try a few of these endpoints. Feel free to substitute your own values for the parameters.</p>
+<p><a href="http://localhost:8080/cities/search/postalCode?q=75202" rel="noreferrer noopener">http://localhost:8080/cities/search/postalCode?q=75202</a></p>
+<p><a href="http://localhost:8080/cities/search/name?q=Boston" rel="noreferrer noopener">http://localhost:8080/cities/search/name?q=Boston</a></p>
+<p><a href="http://localhost:8080/cities/search/nameContains?q=Fort&amp;size=1" rel="noreferrer noopener">http://localhost:8080/cities/search/nameContains?q=Fort&amp;size=1</a></p>
+</li>
+</ol>
+<h1 id="pushing-to-cloud-foundry">Pushing to Cloud Foundry</h1>
+<ol>
+<li>
+<p>Build the application</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw package
+</code></pre>
+</li>
+<li>
+<p>You should already have an application manifest, <code>manifest.yml</code>, created in lab 1; this can be reused. You’ll want to add a timeout param so that our service has enough time to initialize with its data loading:</p>
+<p><strong>cloud-native-spring/manifest.yml.</strong></p>
+<pre><code class="language-yaml">---
+applications:
+- name: cloud-native-spring
+  random-route: true
+  memory: 768M
+  path: target/cloud-native-spring-0.0.1-SNAPSHOT.jar
+  timeout: 180 # to give time for the data to import
+  env:
+    JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
+</code></pre>
+</li>
+<li>
+<p>Push to Cloud Foundry:</p>
+<pre><code class="language-sh">CN-Workshop/labs/my_work/cloud-native-spring $ cf push
+Using manifest file /Users/someuser/git/CN-Workshop/labs/my_work/cloud-native-spring/manifest.yml
+...
+Showing health and status for app cloud-native-spring in org user-org / space user-space as user@example.com...
+OK
+
+requested state: started
+instances: 1/1
+usage: 768M x 1 instances
+urls: cloud-native-spring-liqxfuds.cfapps.io
+last uploaded: Thu Nov 2 11:53:29 UTC 2017
+stack: cflinuxfs2
+buildpack: java_buildpack
+
+      state     since                    cpu    memory           disk           details
+#0   running   2017-11-02 06:54:35 AM   0.0%   157.3M of 768M   158.7M of 1G
+</code></pre>
+</li>
+<li>
+<p>Access the application at the random route provided by CF:</p>
+<pre><code class="language-sh">$ curl -i https://cloud-native-spring-&lt;random&gt;.cfapps.io/cities
+</code></pre>
+</li>
+</ol>
+         </article>
+        <div class="sidebar-container">
+<nav id="sidebar">
+    <div class="title">
+        <a href="../../index.html">Return to Pivotal Azure Workshop</a>
+    </div>
+    <div class="content">
+        <a href="#">Back to top</a>
+
+<ul>
+        <li>
+        <a href="#overview">Overview</a>
+
+<ul>
+        <li>
+        <a href="#create-a-hypermedia-driven-restful-web-service-with-spring-data-rest">Create a Hypermedia-Driven RESTful Web Service with Spring Data REST</a>
+
+        </li>
+        <li>
+        <a href="#add-the-city-domain-object">Add the City domain object</a>
+
+        </li>
+        <li>
+        <a href="#run-the-cloud-native-spring-application">Run the cloud-native-spring Application</a>
+
+        </li>
+        <li>
+        <a href="#importing-data">Importing Data</a>
+
+        </li>
+        <li>
+        <a href="#adding-search">Adding Search</a>
+
+        </li>
+</ul>
+        </li>
+        <li>
+        <a href="#pushing-to-cloud-foundry">Pushing to Cloud Foundry</a>
+
+        </li>
+</ul>
+    </div>
+</nav>
+        </div>
+    </div>
+</main>
+
+
+<div class="slide" data-slide="1">
+    <h1>Pivotal Azure Workshop</h1>
+</div>
+
+<div class="slide transparent" data-slide="2">
+    <h1>Get started!</h1>
+</div>
+
+<div class="slide" data-slide="3">
+    <h1>Wrap up</h1>
+
+    <div class="faces">
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M13,9.94L14.06,11L15.12,9.94L16.18,11L17.24,9.94L15.12,7.82L13,9.94M8.88,9.94L9.94,11L11,9.94L8.88,7.82L6.76,9.94L7.82,11L8.88,9.94M12,17.5C14.33,17.5 16.31,16.04 17.11,14H6.89C7.69,16.04 9.67,17.5 12,17.5Z"/>
+        </svg>
+
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M8.5,11A1.5,1.5 0 0,1 7,9.5A1.5,1.5 0 0,1 8.5,8A1.5,1.5 0 0,1 10,9.5A1.5,1.5 0 0,1 8.5,11M15.5,11A1.5,1.5 0 0,1 14,9.5A1.5,1.5 0 0,1 15.5,8A1.5,1.5 0 0,1 17,9.5A1.5,1.5 0 0,1 15.5,11M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M9,14H15A1,1 0 0,1 16,15A1,1 0 0,1 15,16H9A1,1 0 0,1 8,15A1,1 0 0,1 9,14Z"/>
+        </svg>
+
+        <svg class="face" viewBox="0 0 24 24">
+            <path d="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M16.18,7.76L15.12,8.82L14.06,7.76L13,8.82L14.06,9.88L13,10.94L14.06,12L15.12,10.94L16.18,12L17.24,10.94L16.18,9.88L17.24,8.82L16.18,7.76M7.82,12L8.88,10.94L9.94,12L11,10.94L9.94,9.88L11,8.82L9.94,7.76L8.88,8.82L7.82,7.76L6.76,8.82L7.82,9.88L6.76,10.94L7.82,12M12,14C9.67,14 7.69,15.46 6.89,17.5H17.11C16.31,15.46 14.33,14 12,14Z"/>
+        </svg>
+    </div>
+</div>
+
+
+<div class="slide lemon-squeezy" data-slide="7">
+    <h1>Easy peasy</h1>
+    <h1>lemon squeezy!</h1>
+</div>
+
+<div class="slide" data-slide="8">
+    <h1>Lunch time!</h1>
+    <label for="lunch-end">will return</label>
+    <input type="text" name="lunch-end" data-time>
+</div>
+
+<div class="slide" data-slide="9">
+    <h1>Break time!</h1>
+    <label for="break-end">will return</label>
+    <input type="text" name="break-end" data-time>
+</div>
+
+<audio src="../../audio/gong.mp3"
+       id="gong"
+       preload>
+</audio>
+
+<div class="slide" data-slide="¿">
+    <h2>Keyboard shortcuts</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Key</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>Show <em>introduction</em> slide</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Show <em>get started</em> slide</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Show <em>wrap up</em> slide</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Show <em>instructor notes</em></td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Easy peasy</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Show <em>lunch time</em> slide</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>Show <em>break time</em> slide</td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>Play gong sound</td>
+        </tr>
+        <tr>
+            <td>ESC</td>
+            <td>Close slide</td>
+        </tr>
+        <tr>
+            <td>?</td>
+            <td>Show this help message</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<footer>
+    <a href="https://pivotal.io/legal" rel="noreferrer noopener">CONFIDENTIAL -
+        © Copyright 2018 Pivotal Software, Inc. All Rights Reserved.</a>
+    <div>
+        <label class="hidden-checkbox">
+            <input type="checkbox" id="instructor-mode">
+            <span>course version: 1.1.0<sup class="check">IM</sup></span>
+        </label>
+    </div>
+</footer>
+
+<script src="../../js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script src="../../js/shipkin.js"></script>
+<script src="../../js/slides.js"></script>
+
+</body>
+</html>
+

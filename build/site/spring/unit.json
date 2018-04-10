@@ -1,0 +1,40 @@
+{
+  "title": " - ",
+  "subjects": [
+    {
+      "title": " -spring cloud services (microservice frameworks)- ",
+      "lessons": [
+        {
+          "title": "Intro Spring Cloud Labs",
+          "topic": "deployment",
+          "materials": [
+              {
+                "title": "slides",
+                "location": "day2-slides/scs-intro.pdf"
+              }
+          ]
+        },
+        {
+          "title": "Lab 3: Spring Cloud Config",
+          "topic": "deployment",
+          "materials": [
+            {
+              "title": "lab",
+              "location": "spring-cloud-config/lab04.html"
+            }
+          ]
+        },
+        {
+          "title": "Lab 4: Spring Cloud Service Discovery",
+          "topic": "deployment",
+          "materials": [
+            {
+              "title": "lab",
+              "location": "spring-cloud-service-discovery/lab05.html"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
