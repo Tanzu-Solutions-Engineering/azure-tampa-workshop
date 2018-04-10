@@ -5,7 +5,7 @@
       "title": "Getting Started",
       "lessons": [
         {
-          "title": "Introductions & Schedule",
+          "title": "Overview of the Lab Exercises",
           "topic": "process",
           "materials": [
             {
@@ -15,7 +15,7 @@
           ]
         },
         {
-          "title": "Deploy Pivotal Cloud Foundry to Azure",
+          "title": "Start with Azure Boot Starter connecting to Azure Storage/CosmosDB",
           "topic": "process",
           "materials": [
             {
@@ -25,53 +25,7 @@
           ]
         }
       ]
-    },
-    {
-      "title": "Cloud Native Applications",
-      "lessons": [
-        {
-          "title": "Cloud Native Design Patterns",
-          "topic": "deployment",
-          "materials": [
-            {
-              "title": "slides",
-              "location": "day1-slides/cloud-native-design-patterns.pptx"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Spring Boot",
-      "lessons": [
-        {
-          "title": "Intro to Spring Boot",
-          "topic": "deployment",
-          "materials": [
-            {
-              "title": "slides",
-              "location": "day1-slides/intro-to-spring-boot.pdf"
-            },
-            {
-              "title": "lab",
-              "location": "spring-boot/lab01.html"
-            }
-          ]
-        },
-        {
-          "title": "Azure Spring Boot Starter",
-          "topic": "deployment",
-          "materials": [
-            {
-              "title": "slides",
-              "location": "day1-slides/spring-starters-for-azure.pdf"
-            },
-            {
-              "title": "lab",
-              "location": "azure-spring-starter/azure.html"
-            }
-          ]
-        }
+    }
       ]
     }
   ]
