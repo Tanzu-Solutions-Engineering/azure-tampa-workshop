@@ -14,9 +14,9 @@ buildscript {
 apply plugin: "io.pivotal.pal.shipkin.plugin"
 
 shipkin {
-    baseName = "pivotal-transformation-workshop"
+    baseName = "pivotal-azure-workshop"
     courseVersion = "1.1.0"
-    courseTitle = "Pivotal Transformation Workshop"
+    courseTitle = "Pivotal Azure Workshop"
     showDisclaimer = false
     feedbackUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdR2-woVmejvILly2I_BYuXQyAY_xAo5ygvTnjJGHsjx7lfHw/viewform"
     feedbackUrlField = "entry.1985209097"
