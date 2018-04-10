@@ -16,26 +16,26 @@
         }
       ]
     },
-    {
-      "title": " -springboot- ",
-      "lessons": [
         {
-          "title": "Lab 1: Using Spring Boot and Spring Data",
-          "topic": "deployment",
-          "materials": [ 
-            {
-              "title": "lab",
-              "location": "spring-boot/lab01.html"
-            }
-          ]
-        },
-        {
-          "title": "Lab 2: Azure Spring Boot Starter",
+          "title": "Lab 1: Azure Spring Boot Starter",
           "topic": "deployment",
           "materials": [
             {
               "title": "lab",
               "location": "azure-spring-starter/azure.html"
+            }
+          ]
+        },
+    {
+      "title": " -springboot- ",
+      "lessons": [
+        {
+          "title": "Lab 2: Using Spring Boot and Spring Data",
+          "topic": "deployment",
+          "materials": [ 
+            {
+              "title": "lab",
+              "location": "spring-boot/lab01.html"
             }
           ]
         }
