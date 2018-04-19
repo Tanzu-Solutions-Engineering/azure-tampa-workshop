@@ -23,7 +23,7 @@ our project to Azure's Services.
     
     | Group  | Artifact  |
     |---|---|
-    | `io.pivotal`  | `cloud-native-spring`  |
+    | `io.pivotal`  | `azure-storage-client`  |
 
 1. In the dependencies section, add each of the following manually:
     
