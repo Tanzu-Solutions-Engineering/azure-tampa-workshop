@@ -71,7 +71,7 @@ In this lab we’ll utilize Spring Boot and Spring Cloud to allow our applicatio
 1.  Now that our application is ready to read registry with a Service Registry instance, we need to deploy one! This can be done through Cloud Foundry using the services marketplace. Previously we did this through the Marketplace UI, but this time we will use the Cloud Foundry CLI (though we could also do this through the UI):
 
     ```sh
-    CN-Workshop/labs/my_work/cloud-native-spring $ cf create-service p-service-registry standard service-registry
+    CN-Workshop/labs/cloud-native-spring $ cf create-service p-service-registry standard service-registry
     ```
 
 2.  After you create the service registry instance navigate to your Cloud Foundry *space* in the Apps Manager UI and refresh the page. You should now see the newly create `service-registry` instance. Select the manage link to view the registry dashboard. Note that there are not any registered applications at the moment:
@@ -94,15 +94,15 @@ In this lab we’ll utilize Spring Boot and Spring Cloud to allow our applicatio
     ---
     applications:
     - name: cloud-native-spring
-        random-route: true
-        memory: 768M
-        path: target/cloud-native-spring-0.0.1-SNAPSHOT-exec.jar
-        timeout: 180
-        env:
+      random-route: true
+      memory: 768M
+      path: target/cloud-native-spring-0.0.1-SNAPSHOT-exec.jar
+      timeout: 180
+      env:
         JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
-        services:
-        - config-server
-        - service-registry
+      services:
+      - config-server
+      - service-registry
     ```
 
 Deploy and test application
@@ -111,13 +111,13 @@ Deploy and test application
 1.  For the 2nd half of this lab we’ll need our `cloud-native-spring` Maven artifact accessible in our local Maven repository. Rebuild and install the artifact with the following command:
 
     ```sh
-    CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw install
+    CN-Workshop/labs/cloud-native-spring $ ./mvnw install
     ```
 
 2.  Push application into Cloud Foundry
 
     ```sh
-    CN-Workshop/labs/my_work/cloud-native-spring $ cf push
+    CN-Workshop/labs/cloud-native-spring $ cf push
     ```
 
 3.  If we now test our application URLs we will no change. However, if we view the Service Registry dashboard (accessible from the **Manage** link in Apps Manager) you will see that a service named `CLOUD-NATIVE-SPRING` has registered:
@@ -136,11 +136,9 @@ Create another Spring Boot Project as a Client UI
 
 3.  Fill out the **Project metadata** fields as follows:
 
-    Group  
-    `io.pivotal`
-
-    Artifact  
-    cloud-native-spring-ui
+    | Group  | Artifact  |
+    |---|---|
+    | `io.pivotal`  | `cloud-native-spring-ui`  |
 
 4.  In the dependencies section, add each of the following manually:
 
@@ -156,12 +154,12 @@ Create another Spring Boot Project as a Client UI
     the `cloud-native-spring-ui.zip` file.
 
 6.  Copy then unpack the downloaded zip file to
-    `CN-Workshop/labs/my_work/cloud-native-spring-ui`
+    `CN-Workshop/labs/cloud-native-spring-ui`
 
     ```sh
-    CN-Workshop/labs/my_work $ cp ~/Downloads/cloud-native-spring-ui.zip .
-    CN-Workshop/labs/my_work $ unzip cloud-native-spring-ui.zip
-    CN-Workshop/labs/my_work $ cd cloud-native-spring-ui
+    CN-Workshop/labs $ cp ~/Downloads/cloud-native-spring-ui.zip .
+    CN-Workshop/labs $ unzip cloud-native-spring-ui.zip
+    CN-Workshop/labs $ cd cloud-native-spring-ui
     ```
 
     Your directory structure should now look like:
@@ -169,16 +167,15 @@ Create another Spring Boot Project as a Client UI
     ```
     CN-Workshop:
     ├── labs
-    │   ├── my_work
-    │   │   ├── cloud-native-spring
-    │   │   ├── cloud-native-spring-ui
+    │   ├── cloud-native-spring
+    │   ├── cloud-native-spring-ui
     ```
 
 7.  Rename `application.properties` to `application.yml`
 
     Spring Boot uses the `application.properties`/`application.yml` file to specify various properties which configure the behavior of your application. By default, Spring Initializr (start.spring.io) creates a project with an `application.properties` file, however, throughout this workshop we will be [using YAML instead of Properties](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html#boot-features-external-config-yaml).
 
-        CN-Workshop/labs/my_work/cloud-native-spring-ui $ mv src/main/resources/application.properties src/main/resources/application.yml
+        CN-Workshop/labs/cloud-native-spring-ui $ mv src/main/resources/application.properties src/main/resources/application.yml
 
 8.  Import the project’s pom.xml into your editor/IDE of choice.
 
@@ -188,35 +185,49 @@ Create another Spring Boot Project as a Client UI
 
     ```xml
     <project>
-        [...]
-        <dependencies>
-        [...]
-        <dependency>
-            <groupId>io.pivotal.spring.cloud</groupId>
-            <artifactId>spring-cloud-services-starter-service-registry</artifactId>
-        </dependency>
-        [...]
-        </dependencies>
-        [...]
-        <dependencyManagement>
-        <dependencies>
-            [...]
-            <dependency>
-            <groupId>io.pivotal.spring.cloud</groupId>
-            <artifactId>spring-cloud-services-dependencies</artifactId>
-            <version>{spring-cloud-services-dependencies-version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-            </dependency>
-            <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-dependencies</artifactId>
-            <version>{spring-cloud-dependencies-version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-            </dependency>
-            [...]
-        </dependencies>
+      [...]
+      <properties>
+	       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	       <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	       <java.version>1.8</java.version>
+	       <spring-cloud-services.version>1.6.3.RELEASE</spring-cloud-services.version>
+	       <spring-cloud.version>Edgware.SR3</spring-cloud.version>
+	       <vaadin.version>8.3.1</vaadin.version>
+	   </properties>
+   
+      <dependencies>
+      [...]
+      <dependency>
+          <groupId>io.pivotal.spring.cloud</groupId>
+          <artifactId>spring-cloud-services-starter-service-registry</artifactId>
+      </dependency>
+      [...]
+      </dependencies>
+
+      <dependencyManagement>
+          <dependencies>
+             <dependency>
+                 <groupId>org.springframework.cloud</groupId>
+                 <artifactId>spring-cloud-dependencies</artifactId>
+                 <version>${spring-cloud.version}</version>
+                 <type>pom</type>
+                 <scope>import</scope>
+             </dependency>
+             <dependency>
+                 <groupId>com.vaadin</groupId>
+                 <artifactId>vaadin-bom</artifactId>
+                 <version>${vaadin.version}</version>
+                 <type>pom</type>
+                 <scope>import</scope>
+             </dependency>
+             <dependency>
+                 <groupId>io.pivotal.spring.cloud</groupId>
+                 <artifactId>spring-cloud-services-dependencies</artifactId>
+                 <version>${spring-cloud-services.version}</version>
+                 <type>pom</type>
+                 <scope>import</scope>
+              </dependency>
+              </dependencies>
         </dependencyManagement>
         [...]
     </project>
@@ -396,11 +407,11 @@ Creating the UI
 
     ```yaml
     spring:
-        application:
+      application:
         name: cloud-native-spring-ui
 
     security:
-        basic:
+      basic:
         enabled: false
     ```
 
@@ -424,13 +435,13 @@ Creating the UI
     ---
     applications:
     - name: cloud-native-spring-ui
-        random-route: true
-        memory: 768M
-        path: target/cloud-native-spring-ui-0.0.1-SNAPSHOT-exec.jar
-        env:
-          JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
-        services:
-        - service-registry
+      random-route: true
+      memory: 768M
+      path: target/cloud-native-spring-ui-0.0.1-SNAPSHOT-exec.jar
+      env:
+        JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
+      services:
+      - service-registry
     ```
 
 3.  Push application into Cloud Foundry
@@ -443,15 +454,4 @@ Creating the UI
 
     ![](images/ui.jpg)
 
-5.  From a commandline stop the cloud-native-spring microservice (the
-    original city service, not the new UI)
-
-    ```sh
-    CN-Workshop/labs/my_work/cloud-native-spring $ cf stop cloud-native-spring
-    ```
-
-6.  Refresh the UI app. What happens? Now you get a nasty error that is
-    not very user friendly!
-
-7.  Next we’ll learn how to make our UI Application more resilient in
-    the case that our downstream services are unavailable.
+Congratulations! You've created the smallest of microservices!
