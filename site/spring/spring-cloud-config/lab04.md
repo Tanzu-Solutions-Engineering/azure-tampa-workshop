@@ -28,14 +28,14 @@ In this lab we’ll utilize Spring Boot and Spring Cloud to configure our applic
                 <dependency>
                     <groupId>io.pivotal.spring.cloud</groupId>
                     <artifactId>spring-cloud-services-dependencies</artifactId>
-                    <version>{spring-cloud-services-dependencies-version}</version>
+                    <version>1.6.3.RELEASE</version>
                     <type>pom</type>
                     <scope>import</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.springframework.cloud</groupId>
                     <artifactId>spring-cloud-dependencies</artifactId>
-                    <version>{spring-cloud-dependencies-version}</version>
+                    <version>Edgware.RELEASE</version>
                     <type>pom</type>
                     <scope>import</scope>
                 </dependency>
