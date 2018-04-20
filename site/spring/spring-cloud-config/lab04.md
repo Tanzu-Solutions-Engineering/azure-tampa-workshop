@@ -7,7 +7,7 @@ In this lab we’ll utilize Spring Boot and Spring Cloud to configure our applic
 1.  These features are added by adding
     `spring-cloud-services-starter-config-client` to the classpath.
 
-    Add the following to Maven `dependencies`:
+    Because Pivotal keeps the open source dependancies separate from the PCF specific ones, we need to add two entries for Spring Cloud and Pivotal Cloud dependency management. Edit your pom to add these lines to your Maven project:
 
     **cloud-native-spring/pom.xml.**
 
@@ -23,37 +23,23 @@ In this lab we’ll utilize Spring Boot and Spring Cloud to configure our applic
         [...]
         </dependencies>
         [...]
-    </project>
-    ```
-
-2.  Because Pivotal keeps the open source dependancies separate from the PCF specific ones, we need to add two entries for Spring Cloud and Pivotal Cloud dependency management. Add this snippet to your Maven project:
-
-    **cloud-native-spring/pom.xml.**
-
-    ```xml
-    <project>
-        [...]
-        <dependencies>
-            [...]
-        </dependencies>
-        [...]
         <dependencyManagement>
-          <dependencies>
-            <dependency>
-              <groupId>io.pivotal.spring.cloud</groupId>
-              <artifactId>spring-cloud-services-dependencies</artifactId>
-              <version>{spring-cloud-services-dependencies-version}</version>
-              <type>pom</type>
-              <scope>import</scope>
-            </dependency>
-            <dependency>
-              <groupId>org.springframework.cloud</groupId>
-              <artifactId>spring-cloud-dependencies</artifactId>
-              <version>{spring-cloud-dependencies-version}</version>
-              <type>pom</type>
-              <scope>import</scope>
-            </dependency>
-          </dependencies>
+            <dependencies>
+                <dependency>
+                    <groupId>io.pivotal.spring.cloud</groupId>
+                    <artifactId>spring-cloud-services-dependencies</artifactId>
+                    <version>{spring-cloud-services-dependencies-version}</version>
+                    <type>pom</type>
+                    <scope>import</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-dependencies</artifactId>
+                    <version>{spring-cloud-dependencies-version}</version>
+                    <type>pom</type>
+                    <scope>import</scope>
+                </dependency>
+            </dependencies>
         </dependencyManagement>
         [...]
     </project>
