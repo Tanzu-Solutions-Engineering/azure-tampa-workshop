@@ -15,7 +15,7 @@ our project to Azure's Services.
 
 1.  Browse to [Spring Initializr](https://start.spring.io)
 
-2.  Generate a `Maven Project` with `Java` and Spring Boot `1.5.12`  
+2.  Generate a `Maven Project` with `Java 8` and Spring Boot `1.5.12`  
 
 > ATTENTION: You will have to manually change the Spring Boot Version from 2.0.1 to 1.5.12. This project has not been configured for 2.0 yet.
 
