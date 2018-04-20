@@ -26,30 +26,34 @@ In this lab we’ll utilize Spring Boot and Spring Cloud to configure our applic
     </project>
     ```
 
-2.  We also need to add a general entry for Spring Cloud dependency management. Add this snippet to your Maven project:
+2.  Because Pivotal keeps the open source dependancies separate from the PCF specific ones, we need to add two entries for Spring Cloud and Pivotal Cloud dependency management. Add this snippet to your Maven project:
 
     **cloud-native-spring/pom.xml.**
 
-    ```
+    ```xml
     <project>
         [...]
-        <dependencyManagement>
         <dependencies>
-            <dependency>
-            <groupId>io.pivotal.spring.cloud</groupId>
-            <artifactId>spring-cloud-services-dependencies</artifactId>
-            <version>{spring-cloud-services-dependencies-version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-            </dependency>
-            <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-dependencies</artifactId>
-            <version>{spring-cloud-dependencies-version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-            </dependency>
+            [...]
         </dependencies>
+        [...]
+        <dependencyManagement>
+          <dependencies>
+            <dependency>
+              <groupId>io.pivotal.spring.cloud</groupId>
+              <artifactId>spring-cloud-services-dependencies</artifactId>
+              <version>{spring-cloud-services-dependencies-version}</version>
+              <type>pom</type>
+              <scope>import</scope>
+            </dependency>
+            <dependency>
+              <groupId>org.springframework.cloud</groupId>
+              <artifactId>spring-cloud-dependencies</artifactId>
+              <version>{spring-cloud-dependencies-version}</version>
+              <type>pom</type>
+              <scope>import</scope>
+            </dependency>
+          </dependencies>
         </dependencyManagement>
         [...]
     </project>
@@ -113,7 +117,7 @@ In this lab we’ll utilize Spring Boot and Spring Cloud to configure our applic
 
     ```yaml
     security:
-        basic:
+      basic:
         enabled: false
     ```
 
@@ -125,7 +129,7 @@ In this lab we’ll utilize Spring Boot and Spring Cloud to configure our applic
 
     ```yaml
     spring:
-        application:
+      application:
         name: cloud-native-spring
     ```
 
@@ -133,31 +137,21 @@ In this lab we’ll utilize Spring Boot and Spring Cloud to configure our applic
 
     ```yaml
     spring:
-        application:
+      application:
         name: cloud-native-spring
-
-    info:
-        build:
-        artifact: "@project.artifactId@"
-        name: "@project.name@"
-        description: "@project.description@"
-        version: "@project.version@"
-
+        
     endpoints:
-        sensitive: false
+      sensitive: false
 
     management:
-        security:
+      security:
         enabled: false
-        info:
-        git:
-            mode: full
-        cloudfoundry:
+      cloudfoundry:
         enabled: true
-        skip-ssl-validation: false # set to true if using an insecure CF environment
+        skip-ssl-validation: true # set to false if using an secure CF environment
 
     security:
-        basic:
+      basic:
         enabled: false
     ```
 
@@ -214,14 +208,14 @@ In this lab we’ll utilize Spring Boot and Spring Cloud to configure our applic
     ---
     applications:
     - name: cloud-native-spring
-        random-route: true
-        memory: 768M
-        path: target/cloud-native-spring-0.0.1-SNAPSHOT-exec.jar
-        timeout: 180
-        env:
+      random-route: true
+      memory: 768M
+      path: target/cloud-native-spring-0.0.1-SNAPSHOT-exec.jar
+      timeout: 180
+      env:
         JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
-        services:
-        - config-server
+      services:
+      - config-server
     ```
 
 ## Deploy and test application
@@ -229,7 +223,7 @@ In this lab we’ll utilize Spring Boot and Spring Cloud to configure our applic
 1.  Build the application
 
     ```sh
-    CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw package
+    CN-Workshop/labs/my_work/cloud-native-spring $ ./mvnw clean package
     ```
 
 2.  Push application into Cloud Foundry
