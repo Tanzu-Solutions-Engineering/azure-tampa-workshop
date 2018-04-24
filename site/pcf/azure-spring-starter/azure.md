@@ -89,7 +89,7 @@ our project to Azure's Services.
         }
 
         public static void main(String[] args) {
-            SpringApplication.run(AzureDemoApplication.class, args);
+            SpringApplication.run(AzureStorageClientApplication.class, args);
         }
     }
     ```
