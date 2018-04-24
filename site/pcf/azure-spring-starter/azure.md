@@ -40,58 +40,69 @@ our project to Azure's Services.
 
 
     ```java
-    package io.pivotal.azurestorageclient;
+package io.pivotal.azurestorageclient;
 
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.boot.SpringApplication;
-    import org.springframework.boot.autoconfigure.SpringBootApplication;
-    import org.springframework.web.bind.annotation.RequestMapping;
-    import org.springframework.web.bind.annotation.RequestParam;
-    import org.springframework.web.bind.annotation.RestController;
-    import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-    import com.microsoft.azure.storage.CloudStorageAccount;
-    import com.microsoft.azure.storage.blob.CloudBlobClient;
-    import com.microsoft.azure.storage.blob.CloudBlobContainer;
-    import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.blob.BlobContainerPermissions;
+import com.microsoft.azure.storage.blob.BlobContainerPublicAccessType;
+import com.microsoft.azure.storage.blob.CloudBlobClient;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
-    @SpringBootApplication
-    @RestController
-    public class AzureStorageClientApplication {
+@SpringBootApplication
+@RestController
+public class AzureStorageClientApplication {
 
-        // for blob storage
-        @Autowired
-        private CloudStorageAccount cloudStorageAccount;
+	// for blob storage
+	@Autowired
+	private CloudStorageAccount cloudStorageAccount;
 
-        @RequestMapping("/uploadfile")
-        public boolean upload(@RequestParam("file") MultipartFile file,
-                            @RequestParam("azureContainerName") String azureContainerName) {
+	@RequestMapping("/uploadfile")
+	public String upload(@RequestParam("file") MultipartFile file,
+			@RequestParam("azureContainerName") String azureContainerName) {
 
-            try {
-                // Convert File to Byte Array
-                final String fileName = file.getOriginalFilename();
-                byte[] fileBytes = file.getBytes();
+		String blobStoreUrl = "Failure";
+		try {
+			// Convert File to Byte Array
+			final String fileName = file.getOriginalFilename();
+			byte[] fileBytes = file.getBytes();
 
-                // Upload File to Azure Storage Container
-                CloudBlobClient client = cloudStorageAccount
-                        .createCloudBlobClient();
-                CloudBlobContainer container = client
-                        .getContainerReference(azureContainerName);
-                container.createIfNotExists();
+			// Upload File to Azure Storage Container
+			CloudBlobClient client = cloudStorageAccount
+					.createCloudBlobClient();
+			CloudBlobContainer container = client
+					.getContainerReference(azureContainerName);
+			container.createIfNotExists();
 
-                CloudBlockBlob blob = container.getBlockBlobReference(fileName);
-                blob.upload(file.getInputStream(), fileBytes.length);
+			CloudBlockBlob blob = container.getBlockBlobReference(fileName);
+			blob.upload(file.getInputStream(), fileBytes.length);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return true;
-        }
+			// Get the URL to your uploaded file
+			BlobContainerPermissions permissions = container
+					.downloadPermissions();
+			permissions
+					.setPublicAccess(BlobContainerPublicAccessType.CONTAINER);
+			container.uploadPermissions(permissions);
+			blobStoreUrl = blob.getUri().toString();
 
-        public static void main(String[] args) {
-            SpringApplication.run(AzureStorageClientApplication.class, args);
-        }
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return blobStoreUrl;
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(AzureStorageClientApplication.class, args);
+	}
+}
     ```
 
 1. Compile the demo application with Maven:
