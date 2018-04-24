@@ -127,7 +127,7 @@ Here we will prepare Azure with the base services we need for our Spring Boot Ap
     ```
 1. Create an Azure Storage service instance by running the following command:
 
-    `cf create-service azure-storage standard a-storage -c ./azure-storage.json`
+    `cf create-service azure-storage standard MY-AZURE-STORAGE -c ./azure-storage.json`
 
 1. Look into your Azure portal and check the resource group and the storage account created
 
@@ -151,12 +151,12 @@ Here we will prepare Azure with the base services we need for our Spring Boot Ap
 
 1. Now we have to bind the app to the Service Instance previously created.
     ```sh
-    cf bind-service azure-demo-app a-storage
+    cf bind-service MY-APP-NAME MY-AZURE-STORAGE
     ```
 
 1. Now we need to start our application.
     ```sh
-    cf start azure-demo-app
+    cf start MY-APP-NAME
     ```
 
 ## Test Our App
