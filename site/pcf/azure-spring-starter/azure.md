@@ -108,7 +108,7 @@ our project to Azure's Services.
 1. Compile the demo application with Maven:
 
     ```sh
-    ./mvnw clean install
+    ./mvnw clean install -Dmaven.test.skip=true
     ```
 # Azure Service Broker
 
