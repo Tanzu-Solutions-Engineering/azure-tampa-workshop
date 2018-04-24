@@ -138,7 +138,7 @@ Here we will prepare Azure with the base services we need for our Spring Boot Ap
     ```yaml
     ---
     applications:
-    - name: pb-azure-spring-app
+    - name: MY-APP-NAME
     memory: 1G
     instances: 1
     path: target/MY-APP-JAR.jar
