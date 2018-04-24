@@ -177,11 +177,11 @@ Now that we are familiar with Spring Initializr, let's create a project and add 
     ```yaml
     applications:
     - name: cloud-native-spring
-        random-route: true
-        memory: 768M
-        path: target/cloud-native-spring-0.0.1-SNAPSHOT.jar
-        env:
-            JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
+      random-route: true
+      memory: 768M
+      path: target/cloud-native-spring-0.0.1-SNAPSHOT.jar
+      env:
+          JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
     ```
 
 3.  Push the application to Cloud Foundry.
