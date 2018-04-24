@@ -161,11 +161,11 @@ Here we will prepare Azure with the base services we need for our Spring Boot Ap
 
 ## Test Our App
 You'll need a tool like POSTMAN to test your app. https://www.getpostman.com/. Execute the below steps to test your app. 
-Launch POSTMAN. Enter the appropriate values for your test.
-Your App's endpoint should be `<YOUR_APP_URL>/uploadfile`. (Your app's URL can be captured from the output of `cf push` or from the Apps Manager)
-set the verb to `POST`
-Under `body`, define 2 parameters (Key-Value pairs)
+* Launch POSTMAN. Enter the appropriate values for your test.
+* Your App's endpoint should be `<YOUR_APP_URL>/uploadfile`. (Your app's URL can be captured from the output of `cf push` or from the Apps Manager)
+* set the verb to `POST`
+* Under `body`, define 2 parameters (Key-Value pairs)
  (1) Key=`file`, Type=`File`; Value = choose some lightweight file from your laptop you want to upload. Example - an image. 
  (2) Key=`azureContainerName`, Type=`Text`; Value = pass a name for your Azure Blob Container. This container will be created if it doesn't exist
-Click the `Send` button. The response should contain the Azure Blobstore URL for your uploaded file. 
-Capture the URL from the response from the above step and you should be able to download your file from this URL, which proves that your upload was successful.
+* Click the `Send` button. The response should contain the Azure Blobstore URL for your uploaded file. 
+* Capture the URL from the response from the above step and you should be able to download your file from this URL, which proves that your upload was successful.
