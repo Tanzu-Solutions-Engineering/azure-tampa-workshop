@@ -133,12 +133,12 @@ Here we will prepare Azure with the base services we need for our Spring Boot Ap
 
 ## Deploy to Cloud Foundry
 
-1. In order to deploy the starter app to Cloud Foundry efficiently, we'll need to create a manifest. Create `CN-Workshop/labs/azure/manifest/yml` and populate it with these values.
+1. In order to deploy the starter app to Cloud Foundry efficiently, we'll need to create a manifest. Create `CN-Workshop/labs/azure/manifest/yml` and populate it with these values. Give your application a unique name that includes your initials as a prefix or suffix to the app name: Example `pb-azure-spring-app`. Add the correct path to your Build (JAR) file.
 
     ```yaml
     ---
     applications:
-    - name: azure-demo-app
+    - name: pb-azure-spring-app
     memory: 1G
     instances: 1
     path: target/MY-APP-JAR.jar
