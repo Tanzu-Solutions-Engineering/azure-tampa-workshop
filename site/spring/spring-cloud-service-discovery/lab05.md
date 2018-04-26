@@ -96,7 +96,7 @@ In this lab we’ll utilize Spring Boot and Spring Cloud to allow our applicatio
     - name: cloud-native-spring
       random-route: true
       memory: 768M
-      path: target/cloud-native-spring-0.0.1-SNAPSHOT-exec.jar
+      path: target/cloud-native-spring-0.0.1-SNAPSHOT.jar
       timeout: 180
       env:
         JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
@@ -131,8 +131,8 @@ Create another Spring Boot Project as a Client UI
 
 1.  Browse to [Spring Initializr](https://start.spring.io)
 
-2.  Generate a `Maven Project` with `Java` and Spring Boot
-    `{spring-boot-version}`
+2.  Generate a `Maven Project` with `Java` and Spring Boot version 1.5.13  BUILD-SNAPSHOT
+    
 
 3.  Fill out the **Project metadata** fields as follows:
 
@@ -142,6 +142,8 @@ Create another Spring Boot Project as a Client UI
 
 4.  In the dependencies section, add each of the following manually:
 
+    -   **Rest Repositories**
+    
     -   **Vaadin**
 
     -   **Actuator**
@@ -233,37 +235,8 @@ Create another Spring Boot Project as a Client UI
     </project>
     ```
 
-10. To get a bit of code reuse, we’ll be using the `City` domain object from our main `cloud-native-spring` Spring Boot application. We don’t want to pull in any of its transitive dependencies so we explicitly exclude them, however, we do still need `spring-boot-starter-data-rest` to consume the `/cities` service so we add that one in.
-
-    Add the following to the Maven project dependencies:
-
-    **cloud-native-spring-ui/pom.xml.**
-
-    ```xml
-    <project>
-        [...]
-        <dependencies>
-        [...]
-        <dependency>
-            <groupId>io.pivotal</groupId>
-            <artifactId>cloud-native-spring</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <exclusions>
-            <exclusion>
-                <groupId>*</groupId>
-                <artifactId>*</artifactId>
-            </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-rest</artifactId>
-        </dependency>
-        [...]
-        </dependencies>
-        [...]
-    </project>
-    ```
+10. To get a bit of code reuse, we’ll be using the `City` domain object from our main `cloud-native-spring` Spring Boot application. We don’t want to pull in any of the annotations. You can delete them.
+   
 
 11. Finally, for consistency’s sake, we’ll produce an exec classified artifact as we did for cloud-native-spring. Your build section should now include:
 
@@ -437,7 +410,7 @@ Creating the UI
     - name: cloud-native-spring-ui
       random-route: true
       memory: 768M
-      path: target/cloud-native-spring-ui-0.0.1-SNAPSHOT-exec.jar
+      path: target/cloud-native-spring-ui-0.0.1-SNAPSHOT.jar
       env:
         JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
       services:
