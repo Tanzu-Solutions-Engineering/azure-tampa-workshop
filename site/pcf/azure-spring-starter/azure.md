@@ -144,7 +144,8 @@ Give your application a unique name that includes your initials as a prefix or s
   - name: MY-APP-NAME
     memory: 1G
     instances: 1
-    path: target/MY-APP-JAR.jar```
+    path: target/MY-APP-JAR.jar
+    ```
 
 1. Now the application is ready to be pushed to Cloud Foundry.
     ```sh
