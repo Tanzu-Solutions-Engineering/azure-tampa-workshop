@@ -125,7 +125,7 @@ Here we will prepare Azure with the storage service we need for our Spring Boot 
     "account_type": "Standard_LRS"
     }
     ```
-1. Modify the JSON and replace \<MYSTORAGENAME\> to be a unique and with lowercase letters. This is will be the storage_account_name. 
+1. Modify the JSON and replace   \<MYSTORAGENAME\>    to be unique and use lowercase letters. This will be your storage_account_name. 
 2. Create an Azure Storage service instance by running the following cf command:
 
     `cf create-service azure-storage standard MY-AZURE-STORAGE -c ./azure-storage.json`
