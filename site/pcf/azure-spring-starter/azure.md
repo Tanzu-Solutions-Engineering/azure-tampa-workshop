@@ -112,7 +112,7 @@ our project to Azure's Services.
     ```
 # Azure Service Broker
 
-Here we will prepare Azure with the base services we need for our Spring Boot App.
+Here we will prepare Azure with the storage service we need for our Spring Boot App. This is done via the Cloudfoundry CLI using the JSON configuraton file below.
 
 ## Prepare Azure Blob Storage.
 
@@ -125,11 +125,12 @@ Here we will prepare Azure with the base services we need for our Spring Boot Ap
     "account_type": "Standard_LRS"
     }
     ```
-1. Create an Azure Storage service instance by running the following command:
+1. Modify the JSON and replace <MYSTORAGENAME> to be a unique(all lowercase) storage_account_name. 
+2. Create an Azure Storage service instance by running the following cf command:
 
     `cf create-service azure-storage standard MY-AZURE-STORAGE -c ./azure-storage.json`
 
-1. Look into your Azure portal and check the resource group and the storage account created
+3. Run 'cf services' (or login to the Cloud Foundry Apps Manager https://apps.sys.tampa.get.pivotal.io) to confirm the service is created successfully.
 
 ## Deploy to Cloud Foundry
 
