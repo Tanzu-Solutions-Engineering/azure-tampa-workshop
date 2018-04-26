@@ -138,14 +138,13 @@ Here we will prepare Azure with the storage service we need for our Spring Boot 
 
 Give your application a unique name that includes your initials as a prefix or suffix to the app name: Example `pb-azure-spring-app`. Add the correct path to your Build (JAR) file which maven puts in the 'target/' subdirectory.
 
-    ```yaml
+```yaml
 ---
   applications:
   - name: MY-APP-NAME
     memory: 1G
     instances: 1
-    path: target/MY-APP-JAR.jar
-    ```
+    path: target/MY-APP-JAR.jar```
 
 1. Now the application is ready to be pushed to Cloud Foundry.
     ```sh
