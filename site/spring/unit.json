@@ -8,10 +8,6 @@
           "title": "Intro Spring Cloud Labs",
           "topic": "deployment",
           "materials": [
-              {
-                "title": "slides",
-                "location": "day2-slides/scs-intro.pdf"
-              }
           ]
         },
         {
