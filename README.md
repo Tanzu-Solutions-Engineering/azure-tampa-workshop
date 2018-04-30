@@ -10,9 +10,9 @@ labs.
 
 1. Any changes go under [site/](site/)
 1. `./gradlew build -xcheckLinks` to compile the artifacts.
-1. `./gradlew run` to view your changes.
-1. `COURSE_USERNAME=foo COURSE_PASSWORD=bar ./gradlew generateDeployFiles` will generate the CF manifest with those credentials.
-1. Fix the route and naming information in [manifest.yml](build/site/manifest.yml)
+1. `cf push pcf-tampa-azure -p build/site/ -b staticfile_buildpack` to push to PCF
+1. `./gradlew run` to view your changes. (optional step)
+1. `COURSE_USERNAME=foo COURSE_PASSWORD=bar ./gradlew generateDeployFiles` will generate the CF manifest with those credentials. (optional step)
 
 Lab Setup
 =========
